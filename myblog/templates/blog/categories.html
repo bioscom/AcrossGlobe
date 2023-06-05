@@ -1,0 +1,60 @@
+{% load i18n %}
+
+{% comment %} <div class="row justify-content-center">
+  <div class="col-lg-7">
+      <nav>
+          <div class="nav nav-tabs" id="nav-tab">
+            <a class="nav-item nav-link {% if 'accounts/email' in request.path %}active{% endif %}" id="nav-email-tab" href="{% url 'account_email' %}" aria-selected="true">E-mail</a>
+            <a class="nav-item nav-link {% if 'accounts/password/change' in request.path %}active{% endif %}" id="nav-password-tab" href="{% url 'account_change_password' %}" aria-selected="false">Password</a>
+            <a class="nav-item nav-link {% if 'accounts/social/connections' in request.path %}active{% endif %}" id="nav-connect-tab" href="{% url 'socialaccount_connections' %}" aria-selected="false">Connect</a>
+          </div>
+      </nav>
+  </div>
+</div> {% endcomment %}
+
+{% comment %} <div class="row justify-content-left">
+  <div class="col-lg-7">
+      <nav>
+          <div class="nav nav-tabs" id="nav-tab">
+            <a class="nav-item nav-link" id="nav-email-tab" href="#" aria-selected="true">World</a>
+            <a class="nav-item nav-link" id="nav-password-tab" href="#" aria-selected="false">USA</a>
+            <a class="nav-item nav-link" id="nav-connect-tab" href="#" aria-selected="false">Europe</a>
+            <a class="nav-item nav-link" id="nav-connect-tab" href="#" aria-selected="false">Asia</a>
+            <a class="nav-item nav-link" id="nav-connect-tab" href="#" aria-selected="false">Middle East</a>
+            <a class="nav-item nav-link" id="nav-connect-tab" href="#" aria-selected="false">Africa</a>
+            <a class="nav-item nav-link" id="nav-connect-tab" href="#" aria-selected="false">Nigeria</a>
+          </div>
+      </nav>
+  </div>
+</div> {% endcomment %}
+
+<div class="container mt-2 mb-2">
+  <div class="card">
+    <div class="card-header" style="background-color: #ADD8E6;">
+      <b>{% trans "Across Globe Reporting" %}</b> 
+      {% comment %} <ul class="nav nav-tabs card-header-tabs">
+        <li class="nav-item">
+          <a class="nav-link active" href="#">World</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="#">Nigeria</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="#">USA</a>
+        </li>
+      </ul>{% endcomment %}
+      {% comment %} <center>{% trans "To Create a new topic, click on any category below" %}</center> {% endcomment %}
+    </div>
+    <div class="card-body" style="background-color: #F7FBFB;">
+      {% for type in types %}
+        <b>{{ type.type }}:</b>
+        {% for cat in categories %}
+            {% if type.id == cat.type_id %}
+              <a href="/{{cat.slug}}/{{cat.id}}"><b>{{cat.category_title}}</b>{% if not forloop.last %}, {% endif %} </a>
+            {% endif %}
+        {% endfor %}
+        {% if not forloop.last %}<hr>{% endif %}
+      {% endfor %}
+    </div>
+  </div>
+</div>

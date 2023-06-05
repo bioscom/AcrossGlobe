@@ -1,0 +1,27 @@
+{% load widget_tweaks %}
+{% load crispy_forms_tags %}
+
+{% block css %}
+{% endblock %}
+
+{% block body %}
+    {% with WIDGET_ERROR_CLASS='is-invalid' %}
+        <div class="modal-content">
+            <div class="modal-header">
+                Add Category
+            </div>
+            <form action="/en/add_category/" method="POST"> 
+                <div class="modal-body">
+                    {% csrf_token %}
+                    <div class="container mt-4">
+                        {% crispy form %}
+                    </div>
+                </div>  
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</a>
+                    <button type="submit" class="submit-btn btn btn-primary">Add Category</button>
+                </div>
+            </form>
+        </div>
+    {% endwith %}
+{% endblock %}

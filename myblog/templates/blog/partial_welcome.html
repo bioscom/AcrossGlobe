@@ -1,0 +1,51 @@
+{% load i18n %}
+<div class="dropdown">
+    {% if user.is_authenticated %}
+        <button type="button" class="btn btn-primary dropdown-toggle" class="navbar-toggle collapsed" data-bs-toggle="dropdown">
+            {{request.user}}
+        </button>
+    {% else %}
+        <button type="button" class="btn btn-primary dropdown-toggle" class="navbar-toggle collapsed" data-bs-toggle="dropdown">
+            Login
+        </button>
+    {% endif %}
+
+    <ul class="dropdown-menu" aria-labelledby="Dropdown">
+        {% if user.is_authenticated %}
+            <li class="nav-item">
+                <a class="nav-link {% block profileactive %} {% endblock profileactive %}" href="#" hx-get="{% url "profile" request.user.id %}" hx-target="#dialog">{% trans "Profile" %}</a>
+            </li>
+
+            <li class="nav-item">
+                <a class="nav-link" href="#" hx-get="{% url "password_change" %}" hx-target="#dialog">{% trans "Change Password" %}</a>
+            </li>
+
+            <li class="nav-item">
+                <a class="nav-link" href="#" hx-get="{% url 'MyBlog:advertise' %}"  hx-target="#dialog">{% trans "Advertise on acrossGlobe" %}</a>
+            </li>
+
+            <li class="nav-item">
+                <a class="nav-link" href="{% url "logout" %}">{% trans "Logout" %}</a>
+            </li>
+
+          {% else %}
+            <li class="nav-item">
+                <a href="#" class="nav-link {% block registeractive %} {% endblock registeractive %}" type="link" hx-get="{% url "register" %}" hx-target="#dialog">{% trans "Register" %}</a>
+            </li>
+            <li class="nav-item">
+                <a href="#" class="nav-link {% block loginactive %} {% endblock loginactive %}" type="link" hx-get="{% url "login" %}" hx-target="#dialog">{% trans "Login" %}</a>
+            </li>
+        {% endif %}
+
+        {% if user.is_authenticated %}
+            {% if user.is_superuser %}
+                <li class="nav-item">
+                    <a class="nav-link" href="/admin/">{% trans "Site Admin" %}</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/category_list/">{% trans "Categories" %}</a>
+                </li>
+            {% endif %}
+        {% endif %}
+    </ul>
+</div>

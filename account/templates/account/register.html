@@ -1,0 +1,67 @@
+{% load widget_tweaks %}
+{% load crispy_forms_tags %}
+
+
+{% block body %} 
+  {% with WIDGET_ERROR_CLASS='is-invalid' %}
+  
+    {% comment %} <form action="{% url 'register' %}" method="post"> {% endcomment %}
+    <form hx-post="{{ request.path }}" hx-headers='{"X-CSRFToken":"{{ csrf_token }}"}' class="modal-content">
+      {% comment %} {% csrf_token %} {% endcomment %}
+
+      <tbody hx-trigger="load, postChanged from:body" hx-target="this">
+        <tr>
+          <td class="spinner-border" role="status">
+            <div class="modal-header">
+              <h2>Create an account</h2>
+            </div>
+            <div class="modal-body">
+              <p>Please, sign up using this form:</p>
+              <div class="mb-3">
+                <label for="{{ user_form.username.id_for_label }}" class="form-label">Username</label>
+                {% render_field user_form.username class="form-control" placeholder="" %}
+                <div class="invalid-feedback">{{ user_form.username.errors|first }}</div>
+              </div>
+    
+              <div class="mb-3">
+                <label for="{{ user_form.first_name.id_for_label }}" class="form-label">First Name</label>
+                {% render_field user_form.first_name class="form-control" placeholder="" %}
+                <div class="invalid-feedback">{{ user_form.first_name.errors|first }}</div>
+              </div>
+    
+              <div class="mb-3">
+                <label for="{{ user_form.last_name.id_for_label }}" class="form-label">Last Name</label>
+                {% render_field user_form.last_name class="form-control" placeholder="" %}
+                <div class="invalid-feedback">{{ user_form.last_name.errors|first }}</div>
+              </div>
+    
+              <div class="mb-3">
+                <label for="{{ user_form.email.id_for_label }}" class="form-label">Email Address</label>
+                {% render_field user_form.email class="form-control" placeholder="" %}
+                <div class="invalid-feedback">{{ user_form.email.errors|first }}</div>
+              </div>
+    
+              <div class="mb-3">
+                <label for="{{ user_form.password.id_for_label }}" class="form-label">Password</label>
+                {% render_field user_form.password class="form-control" placeholder="" %}
+                <div class="invalid-feedback">{{ user_form.password.errors|first }}</div>
+              </div>
+    
+              <div class="mb-3">
+                <label for="{{ user_form.password2.id_for_label }}" class="form-label">Repeat password</label>
+                {% render_field user_form.password2 class="form-control" placeholder="" %}
+                <div class="invalid-feedback">{{ user_form.password2.errors|first }}</div>
+              </div>
+              {% comment %} {% crispy user_form %} {% endcomment %}
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</a>
+              <button type="submit" value="Create my account" class="btn btn-primary">Create my account</button>
+            </div>
+
+          </td>
+        </tr>
+      </tbody>
+    </form>
+  {% endwith %}
+{% endblock %}

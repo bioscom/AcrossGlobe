@@ -1,0 +1,59 @@
+{% load widget_tweaks %}
+{% load crispy_forms_tags %}
+
+{% block css %}
+{% endblock %}
+
+{% block body %}
+    {% with WIDGET_ERROR_CLASS='is-invalid' %}
+    <form action="{{request.path}}" enctype="multipart/form-data" method="POST"> 
+        <div class="modal-content">
+            <div class="modal-header" style="background-color: #ADD8E6;">
+                <h5>New Topic - {{category.category_title}}</h5>
+            </div>
+            <div class="modal-body" style="background-color: #deeff;">
+                {% csrf_token %}
+                {{ form.media }}
+                
+                <div class="row col-sm-12">
+                    <div class="mb-3">
+                        <label for="{{ form.title.id_for_label }}" class="form-label">Subject</label>
+                        {% render_field form.title class="form-control" placeholder="" %}
+                        <div class="invalid-feedback">{{ form.title.errors|first }}</div>
+                    </div>
+    
+                    <div class="mb-3">
+                        <label for="{{ form.content.id_for_label }}" class="form-label">Message</label>
+                        {% render_field form.content class="form-control" placeholder="" %}
+                        <div class="invalid-feedback">{{ form.content.errors|first }}</div>
+                    </div>
+
+                    <div class="mb-3">
+                        Attachments: (maximum size: 4MB for pictures and 250kB for other files)
+                    </div>
+                    {{formset1.as_p }}
+                    {{formset2.as_p }}
+                    {{formset3.as_p }}
+                    {{formset4.as_p }}
+                </div>
+                
+            </div>
+            <div class="modal-footer" style="background-color: #ADD8E6;">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</a> 
+                <button type="submit" class="btn btn-primary">Submit</button>
+            </div>
+        </div> 
+    </form> 
+    {% endwith %}
+{% endblock %}
+
+{% comment %} {% block js %}
+    <script>
+        {% if alert %}
+        alert('Your Blog is added successfully.');
+        document.location = '/';
+        {% endif %}
+    </script>
+{% endblock %} {% endcomment %}
+
+

@@ -1,0 +1,99 @@
+{% extends 'base.html' %}
+{% load widget_tweaks %}
+{% load crispy_forms_tags %}
+{% load humanize %}
+
+{% block title %} Category List - acrossGlobe {% endblock %}
+{% block homeactive %} active {% endblock homeactive %}
+
+{% block css %}
+{% endblock %}
+
+{% block body %}
+    <div class="card mt-2"  hx-trigger="load, categoryListChanged from:body" hx-target="this">
+        <div class="card-header">
+            Categories List
+        </div>
+
+        <div class="card-body">
+            <div class="border mb-2" style="height: 65vh; overflow-y: auto; font-size:13px">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th></th>
+                            <th>Type</th>
+                            <th>Title</th>
+                            <th>Sub Title</th>
+                            <th>Moderators Email</th>
+                            <th>Ad Rate</th>
+                            <th>Discount(%)</th>
+                            <th>...</th>
+                        </tr>
+                    </thead>
+                    <tbody hx-trigger="load, ListChanged from:body" hx-target="this">
+                    {% for category in categories %}
+                        <tr>
+                            <td>{{ forloop.counter }}</td>
+                            <td>{{ category.type }}</td>
+                            <td>{{ category.category_title }}</td>
+                            <td>{{ category.sub_title }}</td>
+                            <td>{{ category.moderatoremail }}</td>
+                            <td style="float:right">{{ category.adrate|floatformat:2|intcomma }}</td>
+                            <td>{{ category.discount }}</td>
+                            <td><button type="button" hx-get="{% url 'MyBlog:edit_category' pk=category.pk %}" hx-target="#dialog" class="btn btn-primary">Edit</button></td>
+                        </tr>
+                        {% for sub in subcategories %}
+                            {% if sub.category_id == category.id %}
+                                <tr>
+                                    <td></td>
+                                    <td>{{ category.category_title }}</td>
+                                    <td>{{ sub.title }}</td>
+                                    <td>{{ sub.sub_title }}</td>
+                                    <td>{{ sub.moderatoremail }}</td>
+                                    <td style="float:right">{{ sub.adrate|floatformat:2|intcomma }}</td>
+                                    <td>{{ sub.discount }}</td>
+                                    <td><button type="button" hx-get="{% url 'MyBlog:edit_category' pk=category.pk %}" hx-target="#dialog" class="btn btn-danger">Edit</button></td>
+                                </tr>
+                            {% endif %}
+                        {% endfor %}
+                    {% endfor%}
+                    </tbody>
+                </table>
+            </div>
+            <button type="button" hx-get="/add_category/" hx-target="#dialog" class="btn btn-primary">Add Category</button>
+            {% comment %} <div class="border" style="height: 65vh; overflow-y: auto; font-size:13px">
+                <div class="container col-sm-12 fw-bold">
+                    <div class="row text-left border">
+                        <div class="col-sm-2 border">Type</div>
+                        <div class="col-sm-2 border">Title</div>
+                        <div class="col-sm-3 border">Sub Title</div>
+                        <div class="col-sm-2 border">Moderators email</div>
+                        <div class="col-sm-2 border">Ad Rate / Discount </div>
+                        <div class="col-sm-1 border">...</div>
+                    </div>
+                </div>
+                {% for category in categories %}
+                    <div class="container col-sm-12">
+                        <div class="row border">
+                            <div class="col-sm-2 border"> {{ category.type }} </div>
+                            <div class="col-sm-2 border"> {{ category.category_title }} </div>
+                            <div class="col-sm-3 border"> {{ category.sub_title }} </div>
+                            <div class="col-sm-2 border"> {{ category.moderatoremail }} </div>
+                            <div class="col-sm-2 border"> {{ category.adrate|floatformat:2|intcomma }} / {{ category.discount }}% </div>
+                            <div class="col-sm-1 border"><a href="#" hx-get="{% url 'MyBlog:edit_category' pk=category.pk %}" hx-target="#dialog">Edit</a></div>
+                        </div>
+                    </div>
+                {% endfor%}
+            </div> {% endcomment %}
+        </div>
+    </div>
+{% endblock %}
+
+{% block js %}
+{% comment %} <script>
+    {% if alert %}
+    alert('Category added successfully.');
+    document.location = '/';
+    {% endif %}
+</script> {% endcomment %}
+{% endblock %}

@@ -1,0 +1,86 @@
+{% load widget_tweaks %}
+{% load crispy_forms_tags %}
+
+{% block css %}
+{% endblock %}
+
+{% block body %}
+    {% with WIDGET_ERROR_CLASS='is-invalid' %}
+        <form action="{% url 'myblog:adverts' %}" enctype="multipart/form-data" method="POST"> 
+            {% csrf_token %}
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5>Advertisement - {{category.category_title}}</h5>
+                </div>
+                <div class="modal-body">
+                    {% comment %} {% crispy form %} {% endcomment %}
+                    <div class="row col-sm-12 mb-2">
+                        <div class="col-sm-3"><label for="{{ form.urllink.id_for_label }}" class="form-label">Landing Page</label></div>
+                        <div class="col-sm-9">{% render_field form.urllink class="form-control" placeholder="" %}</div>
+                        <div class="invalid-feedback">{{ form.urllink.errors|first }}</div>
+                    </div>
+
+                    {% comment %} <div class="row col-sm-12 mb-2">
+                        <div class="col-sm-3"><label for="{{ form.advertiser.id_for_label }}" class="form-label">Adver Owner's name</label></div>
+                        <div class="col-sm-9">{% render_field form.advertiser class="form-control" placeholder="" %}</div>
+                        <div class="invalid-feedback">{{ form.advertiser.errors|first }}</div>
+                    </div> 
+
+                    <div class="row col-sm-12 mb-2">
+                        <div class="col-sm-3"><label for="{{ form.image.id_for_label }}" class="form-label">Image</label></div>
+                        <div class="col-sm-9">{% render_field form.image class="form-control" placeholder="" %}</div>
+                        <div class="invalid-feedback">{{ form.image.errors|first }}</div>
+                    </div>{% endcomment %}
+
+                    <div class="row col-sm-12 mb-2">
+                        <div class="col-sm-3"><label for="{{ form.start_date.id_for_label }}" class="form-label">Start Date</label></div>
+                        <div class="col-sm-9">{% render_field form.start_date class="form-control" placeholder="" %}</div>
+                        <div class="invalid-feedback">{{ form.start_date.errors|first }}</div>
+                    </div>
+
+                    <div class="row col-sm-12 mb-2">
+                        <div class="col-sm-3"><label for="{{ form.status.id_for_label }}" class="form-label">Status</label></div>
+                        <div class="col-sm-9">{% render_field form.status class="form-control" placeholder="" %}</div>
+                        <div class="invalid-feedback">{{ form.status.errors|first }}</div>
+                    </div>
+
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</a>
+                    <button type="submit" class="submit-btn btn btn-primary">Submit</button>
+                </div>
+            </div>
+        </form>
+    {% endwith %}
+
+    <hr>
+    <table class="table">
+        <tr>
+        <th>Landing Page</th>
+        {% comment %} <th>Image</th> {% endcomment %}
+        <th>Start Date</th>
+        <th>Status</th>
+        </tr>
+
+        {% for ad in myadverts%}
+        <tr>
+            <td>{{ad.urllink}}</td>
+            {% comment %} <td>{{ad}}</td> {% endcomment %}
+            <td>{{ad.start_date}}</td>
+            <td>{{ad.status}}</td>
+        </tr>
+        {% endfor %}
+
+        <tfoot>
+            <tr>
+            <th colspan="4">Thanks for doing Business with us. Looking forward to see you next time</th>
+            </tr>
+        </tfoot>
+    </table>
+
+{% endblock %}
+
+
+{% block js %}
+    
+{% endblock %}

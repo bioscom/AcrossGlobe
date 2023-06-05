@@ -1,0 +1,208 @@
+{% load thumbnail %}
+{% load social_share %}
+
+{% for comment in comments %}
+    {% if comment.is_parent %}
+        <div class="card mb-2">
+            <div class="card-header">
+                <h5 class="blog-post-title">
+                    <a href="/{{post.slug}}">Re: {{post.title}}</a>
+                    <small>by</small> <span style="font-size: 18px;"><a class="font-weight-bold text-success" href="#" hx-get="/account/user_profile/{{comment.user.id}}/" hx-target="#dialog">{{comment.user}}</a> </span> 
+                    <span style="font-size: 12px;">{{comment.dateTime}}</span>
+                </h5>    
+            </div>
+            <div class="card-body bg-gradient-secondary" style="font-size:13px">
+                <h6 class="card-text">{{comment.content|safe}}</h6>
+                {% if user.id == comment.user.id %}<a href="#" class="font-weight-bold text-success" hx-get="/sub/update_reply_sub_comment/{{comment.id}}/" hx-target="#dialog">(Modify)</a> {% endif %}
+                {% if user.id != comment.user.id %}<a href="#" class="font-weight-bold text-success" hx-get="/sub/reply_sub_comment/{{comment.id}}/" hx-target="#dialog">(Quote)</a>{% endif %}
+                <!-- Like/Unlike Post-->
+                {% if user.id != comment.user.id %}
+                    | {% with total_likes=post.users_like.count users_like=post.users_like.all %}
+                        <span class="count">
+                            <span class="total">{{ total_likes }}</span> 
+                            like{{ total_likes|pluralize }}
+                        </span>
+                        {% if user.is_authenticated %}
+                            <a class="font-weight-bold text-success" href="#" data-id="{{ post.id }}" data-action="{% if request.user in users_like %}un{% endif %}like" class="like button">
+                                {% if request.user not in users_like %} Like {% else %} Unlike {% endif %}
+                            </a>
+                        {% endif %}
+                    {% endwith %}
+                {% endif %} 
+                <!-- end -->
+                | <a class="font-weight-bold text-success" class="font-weight-bold text-success" href="#" hx-get="{% url 'MyBlog:post_share' post.id %}" hx-target="#dialog">Email</a>
+                | {% post_to_facebook object_or_url "Facebook" %}
+                | {% post_to_telegram object_or_url "Telegram" %}
+                | {% post_to_twitter object_or_url "Twitter" %}
+                | {% post_to_whatsapp object_or_url "Whatsapp" %}
+            </div> 
+
+            {% comment %} {% if commentfiles.count > 0 %}<br><br>{% endif %} {% endcomment %}
+            {% for f in commentfiles %}
+                {% if f.comment_id == comment.id %}
+                    <image src="/media/{{f.file}}" class="img-fluid mb-1">
+                {% endif %}
+            {% endfor %}
+        
+            {% for replies in comment.children %}
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="blog-post-title">
+                            <a href="/{{post.slug}}">Re: {{post.title}}</a>
+                            <small>by</small> <span style="font-size: 18px;"><a href="#" hx-get="/account/user_profile/{{replies.user.id}}/" hx-target="#dialog">{{replies.user}}</a> </span> 
+                            <span style="font-size: 12px;">{{replies.dateTime}}</span>
+                        </h5>    
+                    </div>
+                    <div class="card-body bg-gradient-secondary" style="font-size:13px">
+                        <h6 class="card-text">{{replies.content|safe}}</h6>
+                        {% comment %} <a href="#" hx-get="{% url 'MyBlog:reply_comment' comment.id %}" hx-target="#dialog">(Reply)</a> {% endcomment %}
+                        {% if user.id == replies.user.id %} 
+                            <a href="#" class="font-weight-bold text-success" hx-get="{% url 'MyBlog:update_reply_comment' replies.id %}" hx-target="#dialog">(Modify)</a> 
+                        {% endif %}
+                        <a href="#" class="font-weight-bold text-success" hx-get="{% url 'MyBlog:reply_comment' replies.id %}" hx-target="#dialog">(Quote)</a>
+
+                        <!-- Like/Unlike Post-->
+                        {% if user.id != replies.user.id %} 
+                            | {% with total_likes=post.users_like.count users_like=post.users_like.all %}
+                                <span class="count">
+                                    <span class="total">{{ total_likes }}</span> 
+                                    like{{ total_likes|pluralize }}
+                                </span>
+                                {% if user.is_authenticated %}
+                                    <a class="font-weight-bold text-success" href="#" data-id="{{ post.id }}" data-action="{% if request.user in users_like %}un{% endif %}like" class="like button">
+                                        {% if request.user not in users_like %} Like {% else %} Unlike {% endif %}
+                                    </a>
+                                {% endif %}
+                            {% endwith %}
+                        {% endif %} 
+                        <!-- end -->
+                        | <a class="font-weight-bold text-success" class="font-weight-bold text-success" href="#" hx-get="{% url 'MyBlog:post_share' post.id %}" hx-target="#dialog">Email</a>
+                        | {% post_to_facebook object_or_url "Facebook" %}
+                        | {% post_to_telegram object_or_url "Telegram" %}
+                        | {% post_to_twitter object_or_url "Twitter" %}
+                        | {% post_to_whatsapp object_or_url "Whatsapp" %}
+                    </div> 
+                    {% comment %} {% if commentfiles.count > 0 %}<br><br>{% endif %}
+                    {% for f in commentfiles %}<img src="/media/{{f.file}}" class="img-fluid mb-1">{% endfor %} {% endcomment %}
+                    {% for f in commentfiles %}
+                        {% if f.comment_id == replies.id %}
+                            <image src="/media/{{f.file}}"  class="img-fluid mb-1">
+                        {% endif %}
+                    {% endfor %}
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+{% endfor %}
+
+{% if comments.has_other_pages %}
+    <nav aria-label="Page navigation">
+        <ul class="pagination justify-content-center">
+            {% if comments.has_previous %}
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ comments.previous_page_number }}">Previous</a>
+                </li>
+            {% else %}
+                <li class="page-link disabled" aria-disabled="true"><span>Previous</span></li>
+            {% endif %}
+            {% for i in comments.paginator.page_range %}
+                {% if comments.number == i %}
+                    <li class="page-item active">
+                        <a class="page-link">{{ i }}</a>
+                    </li>
+                {% else %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ i }}">{{ i }}</a>
+                    </li>
+                {% endif %}
+            {% endfor %}
+            {% if comments.has_next %}
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ comments.next_page_number }}">Next</a>
+                </li>
+            {% else %}
+                <li class="page-link disabled"><span>Next</span></li>
+            {% endif %}
+        </ul>
+    </nav>
+{% endif %}
+
+{% comment %} {% if comments.has_other_pages %}
+    <nav aria-label="Page navigation conatiner">
+        <ul class="pagination justify-content-center">
+            {% if comments.has_previous %}
+                <li><a href="?page={{ comments.previous_page_number }}">&laquo;</a></li>
+            {% else %}
+                <li class="disabled"><span>&laquo;</span></li>
+            {% endif %}
+            {% for i in comments.paginator.page_range %}
+                {% if comments.number == i %}
+                <li class="active"><span>{{ i }} <span class="sr-only">(current)</span></span></li>
+                {% else %}
+                <li><a href="?page={{ i }}">{{ i }}</a></li>
+                {% endif %}
+            {% endfor %}
+            {% if comments.has_next %}
+                <li><a href="?page={{ comments.next_page_number }}">&raquo;</a></li>
+            {% else %}
+                <li class="disabled"><span>&raquo;</span></li>
+            {% endif %}
+        </ul>
+    </nav>
+{% endif %}
+
+{% if posts.has_other_pages %}
+    <nav aria-label="Page navigation conatiner">
+    <ul class="pagination justify-content-center">
+        {% if posts.has_previous %}
+        <li><a href="?page={{ posts.previous_page_number }}">&laquo;</a></li>
+        {% else %}
+        <li class="disabled"><span>&laquo;</span></li>
+        {% endif %}
+        {% for i in posts.paginator.page_range %}
+        {% if posts.number == i %}
+            <li class="active"><span>{{ i }} <span class="sr-only">(current)</span></span></li>
+        {% else %}
+            <li><a href="?page={{ i }}">{{ i }}</a></li>
+        {% endif %}
+        {% endfor %}
+        {% if posts.has_next %}
+        <li><a href="?page={{ posts.next_page_number }}">&raquo;</a></li>
+        {% else %}
+        <li class="disabled"><span>&raquo;</span></li>
+        {% endif %}
+    </ul>
+    </nav>
+{% endif %} {% endcomment %}
+
+
+        {% comment %} {% for f in commentfiles %}
+            {% if f.comment_id == comment.id %}
+            <img src="{% thumbnail f.file 500x500 %}" class="mb-2">
+            {% comment %} <image src="/media/{{f.file}}" alt="" height="200px" width="500px"><br><br>
+            {% endif %}
+        {% endfor %}
+        
+        {% for reply in replycomment %}
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="blog-post-title">
+                        <a href="/blog/{{post.slug}}">Re: {{post.title}}</a>
+                        <small>by</small> 
+                        <span style="font-size: 18px;">
+                        <a href="#" hx-get="/user_profile/{{reply.replier_name_id}}/" hx-target="#dialog">{{reply.replier_name}}</a> </span> 
+                        <span style="font-size: 12px;">{{reply.replied_date}}</span>
+                    </h5>    
+                </div>
+                <div class="card-body">
+                    <div class="card">
+                        <div class="card-body" style="background-color: #ADD8E6;">
+                            <h7 class="card-text">{{ reply.comment|safe }}</h7>
+                        </div>
+                    </div> 
+                </div>
+            </div>
+        {% endfor %}
+        <a href="/reply_comment/{{post.slug}}/{{comment.id}}">(Reply)</a>
+    </div>
+{% endfor %} {% endcomment %}
