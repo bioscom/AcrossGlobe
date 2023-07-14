@@ -34,13 +34,22 @@ class ProfileEditForm(forms.ModelForm):
     class Meta:
         model = Profile
         fields = ('date_of_birth', 'image', )
+        widgets = {
+            'date_of_birth': forms.DateInput(
+                attrs={'type': 'date', 'placeholder': 'dd-mm-yyyy (DOB)', 'class': 'form-control'}
+            )
+         }
 
 
 class ProfileForm(forms.ModelForm):
     #phone_no = PhoneNumberField()
     class Meta:
          model = Profile
-         fields = ('phone_no', 'bio', 'facebook', 'instagram', 'linkedin', 'image',)
+         fields = ('date_of_birth', 'gender', 'phone_no', 'bio', 'facebook', 'instagram', 'linkedin', 'image',)
+         widgets = {
+            'date_of_birth': forms.DateInput(attrs={'type': 'date', 'placeholder': 'dd-mm-yyyy (DOB)', 'class': 'form-control'}),
+            'bio': forms.Textarea(attrs={'rows':3, 'cols':10}),
+         }
          
 
 class PasswordResetForm(forms.ModelForm):

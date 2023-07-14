@@ -1,9 +1,10 @@
 import json
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import redirect, render, get_object_or_404
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
+from django.urls import reverse
 
 from myblog.models import BlogPost
 from .models import Profile
@@ -16,6 +17,12 @@ from common.decorators import ajax_required
 from .models import Contact
 from django.core.mail import send_mail
 from verify_email.email_handler import send_verification_email
+from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
+
+from user_visit.models import *
+import datetime
+from datetime import datetime
+from smtplib import SMTPException
 
 
 def user_login(request):
@@ -26,24 +33,56 @@ def user_login(request):
             username=cd['username']
             password=cd['password']
             user = authenticate(request, username=username, password=password)
-            #user = authenticate(username=username, password=password)
             if user is not None:
                 if user.is_active:
                     login(request, user)
-                    messages.success(request, "Successfully Logged In")
+                    messages.success(request, "You are successfully Logged In to Across Globe. For any area of improvement, kindly mail moderator under any of the sections below. Thanks for using AcrossGlobe.")
+                    send_login_mail(request, user)
                     return redirect("/")
                 else:
-                    #messages.error(request, 'Disabled Account.')
-                    return HttpResponse(status=204, headers={'HX-Trigger': json.dumps({"postChanged": None, "showMessage": f"Disabled Account." })})
+                    mymessage="You have not confirmed your email address yet. This means that you will not be able to reset your password if you lose it. "
+                    mymessage=+"If you cannot find your confirmation email anymore, send yourself a new one " + f"<a href='#'> here.</a>"
+                    messages.error(request, mymessage)
+                    return redirect("/")
             else:
-                # messages.error(request, 'Invalid login.')
-                # return HttpResponse('Invalid login')
-                return HttpResponse(status=204, headers={'HX-Trigger': json.dumps({"postChanged": None, "showMessage": f"Invalid login. Try using the correct username and password" })})
+                messages.error(request, 'Invalid login!!! Username or password is incorrect. Check and try again later.')
+                return redirect("/")
     else:
         form = LoginForm()
     return render(request, 'account/partial_login.html', {'form': form})
     # kindly refer to Login function in MyBlog:views.py line 452
 
+
+def send_login_mail(request, user):
+    obj = UserVisit.objects.filter(user_id=user.id).order_by('timestamp').last()
+   
+    subject = "Login Notification"
+    datetime_obj = datetime.strptime(str(obj.timestamp),  "%Y-%m-%d %H:%M:%S.%f%z")
+    
+    source = ''
+    if 'iPhone' in obj.ua_string:
+        source = 'Mobile iPhone'
+    elif 'Windows' in obj.ua_string:
+        source = 'desktop'
+    elif 'Android' in obj.ua_string:
+        source = 'Mobile Android'
+    
+    message = "Dear user,\n \n"
+    message += "You logged in at "+ str(datetime_obj.strftime('%I:%H %p')) + " on " + str(datetime.strptime(str(datetime_obj), "%Y-%m-%d %H:%M:%S.%f%z").date()) + " from the following "+ source +" device:\n"
+    message += "User Agent: " + obj.ua_string + "\n"
+    message += "IP Address: " + obj.remote_addr + "\n \n"
+    message += "Best Regards, \n"
+    message += "Across Globe Reporting, \n" 
+    message += "https://acrossglobes.com/"
+    
+    try:
+        sendermail = request.user.email
+        receipientmail = [request.user.email]
+        send_mail(subject, message, sendermail, receipientmail)
+    except SMTPException as e:
+         return JsonResponse({'status':'error'})
+    return JsonResponse({'status':'ok'})
+  
 
 @login_required
 def dashboard(request):
@@ -55,17 +94,14 @@ def register(request):
         form = UserRegistrationForm(request.POST)
         if form.is_valid():
             inactive_user = send_verification_email(request, form)
-            # Create a new user object but avoid saving it yet
-            new_user = form.save(commit=False)
-            # Set the chosen password
-            new_user.set_password(form.cleaned_data['password'])
-            # Save the User object
-            new_user.save()
-            # Create the user profile
-            Profile.objects.create(user=new_user)
-            return HttpResponse(status=200, headers={'HX-Trigger': json.dumps({"postChanged": None, "showMessage": f"{new_user.first_name} added." })})
+            new_user = form.save(commit=False) # Create a new user object but avoid saving it yet
+            new_user.set_password(form.cleaned_data['password']) # Set the chosen password
+            new_user.save() # Save the User object
+            Profile.objects.create(user=new_user) # Create the user profile
+            messages.success(request, 'You are successfully registered and an email has been sent to your email address, use the link in the e-mail to confirm your registration.')
         else:
-            return HttpResponse(status=200, headers={'HX-Trigger': json.dumps({"postChanged": None})}) # Means no content
+            messages.error(request, 'Not sucessful, try again!')
+            #return redirect("/")
     else:
         form = UserRegistrationForm()
     return render(request, 'account/register.html', {'user_form': form})
@@ -80,8 +116,10 @@ def edit(request):
             user_form.save()
             profile_form.save()
             messages.success(request, 'Profile updated successfully')
+            #return redirect("/")
         else:
             messages.error(request, 'Error updating your profile')
+            #return redirect("/")
     else:
         user_form = UserEditForm(instance=request.user)
         profile_form = ProfileEditForm(instance=request.user.profile)
@@ -92,16 +130,35 @@ def edit_profile(request):
     try:
         profile = request.user.profile
     except Profile.DoesNotExist:
-        profile = Profile(user=request.user, id=request.user.author_id)
+        profile = Profile(user=request.user)
     if request.method == "POST":
         form = ProfileForm(data=request.POST, files=request.FILES, instance=profile)
         if form.is_valid():
             form.save()
-            alert = True
-            return render(request, "account/partial_edit_profile.html", {'alert': alert})
+            messages.success(request, "Your profile update was successful.")
+            return redirect("/")
+            #alert = True
+            #return render(request, "account/partial_edit_profile.html", {'alert': alert})
     else:
         form = ProfileForm(instance=profile)
     return render(request, "account/partial_edit_profile.html", {'form': form})
+
+
+# def edit_profile(request):
+#     try:
+#         profile = request.user.profile
+#     except Profile.DoesNotExist:
+#         profile = Profile(user=request.user, id=request.user.id)
+#     if request.method == "POST":
+#         form = ProfileForm(data=request.POST, files=request.FILES, instance=profile)
+#         if form.is_valid():
+#             form.save()
+#             alert = True
+#             return HttpResponse(status=204, headers={"postChanged": None, "showMessage": f"{request.user.author.first_name} updated."})
+#             #return render(request, "account/partial_edit_profile.html", {'alert': alert})
+#     else:
+#         form = ProfileForm(instance=profile)
+#     return render(request, "account/partial_edit_profile.html", {'form': form})
 
 
 @login_required
@@ -135,45 +192,60 @@ def user_follow(request):
 
 
 def user_profile(request, myid):
-    post = BlogPost.objects.filter(author_id=myid).order_by('-dateTime')
-    return render(request, "account/partial_user_profile.html", {'post': post})
+    object_list = BlogPost.objects.filter(author_id=myid).filter(parent_id__isnull=True).order_by('-dateTime')
+    thisUser = User.objects.get(id=myid)
+    
+    # Paginate user's post list
+    paginator = Paginator(object_list, 10)  # 3 posts in each page
+    page = request.GET.get('page')
+    try:
+        post = paginator.page(page)
+    except PageNotAnInteger:
+        # If page is not an integer deliver the first page
+        post = paginator.page(1)
+    except EmptyPage:
+        # If page is out of range deliver last page of results
+        post = paginator.page(paginator.num_pages)
+    
+    return render(request, "account/partial_user_profile.html", {'post': post, 'thisUser':thisUser})
 
 
 def MyProfile(request, myid):
-    post = BlogPost.objects.filter(author_id=myid).order_by('-dateTime')
+    object_list = BlogPost.objects.filter(author_id=myid).filter(parent_id__isnull=True).order_by('-dateTime')
+    
+    # Paginate user's post list
+    paginator = Paginator(object_list, 10)  # 3 posts in each page
+    page = request.GET.get('page')
+    try:
+        post = paginator.page(page)
+    except PageNotAnInteger:
+        # If page is not an integer deliver the first page
+        post = paginator.page(1)
+    except EmptyPage:
+        # If page is out of range deliver last page of results
+        post = paginator.page(paginator.num_pages)
+    
     return render(request, "account/partial_profile.html", {'post': post})
 
 
-def edit_profile(request):
-    try:
-        profile = request.user.profile
-    except Profile.DoesNotExist:
-        profile = Profile(user=request.user, id=request.user.author_id)
-    if request.method == "POST":
-        form = ProfileForm(data=request.POST, files=request.FILES, instance=profile)
+
+
+
+def password_change(request):
+    if request.method == 'POST':
+        form = PasswordResetForm(request.POST)
         if form.is_valid():
             form.save()
-            alert = True
-            return HttpResponse(status=204, headers={"postChanged": None, "showMessage": f"{request.user.author.first_name} updated."})
-            #return render(request, "account/partial_edit_profile.html", {'alert': alert})
+            messages.success(request, "Password sucessfuly changed")
+            return redirect('/')
+            #return render(request, "registration/password_reset_form.html", {'form': form})
+            #return HttpResponse(status=204, headers={'HX-Trigger': json.dumps({"movieListChanged": None, "showMessage": f"{new_user.first_name} added." })})
     else:
-        form = ProfileForm(instance=profile)
-    return render(request, "account/partial_edit_profile.html", {'form': form})
-
-
-# def password_change(request):
-#     if request.method == 'POST':
-#         form = PasswordResetForm(request.POST)
-#         if form.is_valid():
-#             form.save()
-#             return render(request, "registration/password_reset_form.html", {'form': form})
-#             #return HttpResponse(status=204, headers={'HX-Trigger': json.dumps({"movieListChanged": None, "showMessage": f"{new_user.first_name} added." })})
-#     else:
-#         form = PasswordResetForm()
-#     return render(request, "registration/password_reset_form.html", {'form': form})
+        form = PasswordResetForm()
+    return render(request, "registration/password_reset_form.html", {'form': form})
 
 
 def Logout(request):
-     messages.success(request, "Successfully logged out")
-     logout(request)
-     return redirect('/')
+    logout(request)
+    messages.success(request, "You have been successfully logged out. We expect to see you soon. Thanks for using AcrossGlobe.")
+    return redirect('/')

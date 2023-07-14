@@ -13,56 +13,61 @@
 {% block body %}
 {% load humanize %}
 
-      <div class="container mt-3 mb-1 text-center">
-            <h5>{{post.title}} - {{category.title}} - Across Globe</h5>
+      <div id="up" class="container mt-3 mb-1 text-center">
+            <h3>{{posts.title}} - {{subcategory.title}} - Across Globe</h3>
             {% comment %} <a href="/blog/{{post.slug}}"><h5>{{post.title}} - {{category.category_title}} - acrossGlobe</h5><a> {% endcomment %}
-            <a href="/sub/{{category.slug}}/">{{category.title}}</a> / <a href="/sub/{{post.slug}}/">{{post.title}}</a><a> Comments ({{ comments.count }})  ({{ post.viewers.count }} Viewers)</a>
-            <a><p>Views: {% get_hit_count for post %}</p></a>
+            <b><a href="/">Across globe</a> / <a href="/cat/{{cattype.id}}">{{cattype.type}}</a> / <a href="/{{category.slug}}/{{category.id}}">{{category.category_title}}</a> / <a href="/sub/{{subcategory.slug}}/">{{subcategory.title}}</a> / <a href="/{{posts.slug}}/sub/">{{posts.title}}</a></b><a> ({% get_hit_count for posts %} Views)</a>
       </div>
       
-      <div class="vertipics mt-2 text-center">
-            <a href="/hopto/home/17156" rel=sponsored><img src="https://www.nairaland.com/vertipics/6ez6otwqpwazgmvtld26kw3q2roijgou.png"></a>
-            <a href="/hopto/home/17074" rel=sponsored><img src="https://www.nairaland.com/vertipics/iqax0ww60vcft2zqxgm9ocus2dq86ae0.jpg"></a>
-            <a href="/hopto/home/15920" rel=sponsored><img src="https://www.nairaland.com/vertipics/1cqm2xehafkcin1q0te5z27n9tz69oy6.jpg"></a>
+      <div class="mb-2 text-center">
+            {% for p in popular_posts %}
+                  <a href="/{{p.slug}}/sub/">{{p.title}}</a>
+                  {% if not forloop.last %}/{% endif %}
+            {% endfor %}
       </div>
+      {% comment %} <div class="vertipics mt-2 mb-2 text-center">
+            <a href="#" hx-get="{% url 'MyBlog:adverts' %}" hx-target="#dialog" rel=sponsored><img src="https://www.nairaland.com/vertipics/6ez6otwqpwazgmvtld26kw3q2roijgou.png"></a>
+            <a href="#" hx-get="{% url 'MyBlog:adverts' %}" hx-target="#dialog" rel=sponsored><img src="https://www.nairaland.com/vertipics/iqax0ww60vcft2zqxgm9ocus2dq86ae0.jpg"></a>
+            <a href="#" hx-get="{% url 'MyBlog:adverts' %}" hx-target="#dialog" rel=sponsored><img src="https://www.nairaland.com/vertipics/1cqm2xehafkcin1q0te5z27n9tz69oy6.jpg"></a>
+      </div> {% endcomment %}
 
       <div class="container mt-3 mb-1 text-center">
-            <a href="#" hx-get="{% url 'MyBlog:add_comment' post.slug %}" hx-target="#dialog">(Reply)</a>
+            <a href="#" hx-get="{% url 'MyBlog:add_sub_comment' posts.slug %}" hx-target="#dialog">(Reply) <a href="#down"><b>(Go Down)</b></a></a>
       </div>
 
       {% comment %} hx-get="{% url 'MyBlog:blog_details' post.slug %}" {% endcomment %}
 
-      <div class="container mt-3 mb-1">
-            <div class="card">  
-                  <div class="card-header" style="background-color: #ADD8E6;">
+      <div class="container mt-3">
+            {% if comments.number < 2 %}
+            <div id="{{posts.id}}" class="card">  
+                  <div class="card-header">
                         <h5 class="blog-post-title">
-                              <a href="/{{post.slug}}/sub/">{{post.title}}</a>
+                              <a href="/{{posts.slug}}/sub/">{{posts.title}}</a>
                               <small>by</small> 
-                              <span style="font-size: 18px;"><a class="font-weight-bold text-success" href="#" hx-get="/account/user_profile/{{post.author.id}}/" hx-target="#dialog">{{post.author}}</a></span>
-                              <span style="font-size: 12px;">{{post.dateTime}}</span>
+                              <span style="font-size: 18px;"><a class="user" href="#" hx-get="/account/user_profile/{{posts.author.id}}/" hx-target="#dialog">{{posts.author}}</a></span>
+                              <span style="font-size: 12px;">{{posts.dateTime}}</span>
                         </h5> 
                   </div>
-                  <div class="card-body" style="background-color: #F7FBFB">
-                        <h7 class="card-text">{{post.content|safe}}</h7>  
+                  <div class="card-body">
+                        <h7 class="card-text">{{posts.content|safe}}</h7>  
 
-                        {% if user.is_authenticated %} {% if user.id == post.author.id %} <a class="font-weight-bold text-success" href="#" hx-get="{% url 'MyBlog:update_sub_post' post.slug %}" hx-target="#dialog">(Modify)</a> {% endif %} {% endif %} 
-                        {% comment %} {% if user.id != post.author.id %} <a href="#" class="font-weight-bold text-success" hx-get="{% url 'MyBlog:add_comment' post.slug %}" hx-target="#dialog">(Quote)</a>{% endif %} {% endcomment %}
-                        {% if user.id != post.author.id %} <a href="#" class="font-weight-bold text-success" hx-get="{% url 'MyBlog:reply_sub_post' post.slug %}" hx-target="#dialog">(Quote)</a>{% endif %}
+                        {% if user.is_authenticated %} {% if user.id == posts.author.id %} <a class="font-weight-bold user" href="#" hx-get="{% url 'MyBlog:update_sub_post' posts.slug %}" hx-target="#dialog">(Modify)</a> {% endif %} {% endif %} 
+                        {% if user.id != posts.author.id %} <a href="#" class="font-weight-bold user" hx-get="{% url 'MyBlog:reply_sub_post' posts.id %}" hx-target="#dialog">(Quote)</a>{% endif %}
                                
                         <!-- Like/Unlike Post-->
-                        | {% with total_likes=post.users_like.count users_like=post.users_like.all %}
+                        | {% with total_likes=posts.users_like.count users_like=posts.users_like.all %}
                               <span class="count">
                                     <span class="total">{{ total_likes }}</span> 
                                     like{{ total_likes|pluralize }}
                               </span>
                               {% if user.is_authenticated %}
-                                    <a class="font-weight-bold text-success" href="#" data-id="{{ post.id }}" data-action="{% if request.user in users_like %}un{% endif %}like" class="like button">
+                                    <a href="#" data-id="{{ posts.id }}" data-action="{% if request.user in users_like %}un{% endif %}like" class="like button font-weight-bold user" >
                                           {% if request.user not in users_like %} Like {% else %} Unlike {% endif %}
                                     </a>
                               {% endif %}
                         {% endwith %}
                         <!-- end -->
-                        | <a class="font-weight-bold text-success" href="#" hx-get="{% url 'MyBlog:post_share' post.id %}" hx-target="#dialog">Email</a>
+                        | <a class="font-weight-bold user" href="#" hx-get="{% url 'MyBlog:sub_post_share' posts.id %}" hx-target="#dialog">Email</a>
                         | {% post_to_facebook object_or_url "Facebook" %}
                         | {% post_to_telegram object_or_url "Telegram" %}
                         | {% post_to_twitter object_or_url "Twitter" %}
@@ -70,39 +75,56 @@
                            
                         {% comment %} {% if files.count > 0 %}<br><br>{% endif %} {% endcomment %}
                         <div class="mb-2"></div>
-                        {% for f in files %}<img src="/media/{{f.file}}" class="img-fluid mb-1">{% endfor %}
+                        {% if posts.image1 %}<div class="mb-1"><img src="/media/{{posts.image1}}" class="img-fluid mb-1"></div>{% endif %}
+                        {% if posts.image2 %}<div class="mb-1"><img src="/media/{{posts.image2}}" class="img-fluid mb-1"></div>{% endif %}
+                        {% if posts.image3 %}<div class="mb-1"><img src="/media/{{posts.image3}}" class="img-fluid mb-1"></div>{% endif %}
+                        {% if posts.image4 %}<div class="mb-1"><img src="/media/{{posts.image4}}" class="img-fluid"></div>{% endif %}
+                        
                   </div>   
             </div>
+            {% endif %}
+            
             {% include "blog/blog_sub_details_comments.html" %}
       </div>
 
-      <div class="vertipics mt-2 mb-2 text-center">
-            <a href="/hopto/home/17156" rel=sponsored><img src="https://www.nairaland.com/vertipics/6ez6otwqpwazgmvtld26kw3q2roijgou.png"></a>
-            <a href="/hopto/home/17074" rel=sponsored><img src="https://www.nairaland.com/vertipics/iqax0ww60vcft2zqxgm9ocus2dq86ae0.jpg"></a>
-            <a href="/hopto/home/15920" rel=sponsored><img src="https://www.nairaland.com/vertipics/1cqm2xehafkcin1q0te5z27n9tz69oy6.jpg"></a>
-      </div>
+      {% comment %} <div class="vertipics mt-2 mb-2 text-center">
+            <a href="#" hx-get="{% url 'MyBlog:adverts' %}" hx-target="#dialog" rel=sponsored><img src="https://www.nairaland.com/vertipics/6ez6otwqpwazgmvtld26kw3q2roijgou.png"></a>
+            <a href="#" hx-get="{% url 'MyBlog:adverts' %}" hx-target="#dialog" rel=sponsored><img src="https://www.nairaland.com/vertipics/iqax0ww60vcft2zqxgm9ocus2dq86ae0.jpg"></a>
+            <a href="#" hx-get="{% url 'MyBlog:adverts' %}" hx-target="#dialog" rel=sponsored><img src="https://www.nairaland.com/vertipics/1cqm2xehafkcin1q0te5z27n9tz69oy6.jpg"></a>
+      </div> {% endcomment %}
 
       <div class="mb-2">
             {% for title in datas.title.all %}
                   <a href="#" hx-get="/user_profile/{{post.author.id}}/">{{title}}, </a> 
             {% endfor %}
       </div>
-      
-      <div class="mb-2">
+
+      <div class="mb-2 text-center">
             <b>Viewing this topic:</b>
             {% for viewer in datas.viewers.all %}
-                  <a href="#" hx-get="/user_profile/{{post.author.id}}/" hx-target="#dialog">{{viewer}}, </a> 
+                  <a href="#" hx-get="/account/user_profile/{{viewer.id}}/" hx-target="#dialog">{{viewer}}</a>
+                  {% if not forloop.last %}, {% endif %}
+            {% endfor %}
+            and {{guest_user}} guest(s)
+      </div>
+
+      <div class="mb-2 text-center">
+            {% for p in least_popular_posts %}
+            <a href="/{{p.slug}}/sub/">{{p.title}}</a>
+                  {% if not forloop.last %}/{% endif %}
             {% endfor %}
       </div>
       
+      <div id="down" class="mb-2 text-center">
+            <a href="#up"><b>(Go Up)</b></a>
+      </div>
 
 {% endblock %}
 
 {% block domready %}
-
       $('a.like').click(function(e){
             e.preventDefault();
-            $.post('{% url "MyBlog:like" %}',
+            $.post('{% url "MyBlog:sublike" %}',
             {
                   id: $(this).data('id'),
                   action: $(this).data('action')
@@ -125,6 +147,7 @@
       });
 
 {% endblock %}
+
 
 {% block js %}
 {% endblock %}

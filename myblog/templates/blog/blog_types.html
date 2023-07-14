@@ -1,0 +1,33 @@
+{% extends 'base.html' %}
+{% load widget_tweaks %}
+{% load crispy_forms_tags %}
+{% load humanize %}
+
+{% block title %} Category List - acrossGlobe {% endblock %}
+{% block homeactive %} active {% endblock homeactive %}
+
+{% block css %}
+{% endblock %}
+
+{% block body %}
+    <div class="container mt-1 mb-2">
+        <div class="card text-center">
+            <div class="card-header">
+                <h5>{{type.type}}</h5>
+            </div>
+            <div class="card-body">
+                {% for cat in categories %}
+                    <p><a href="/{{cat.slug}}/{{cat.id}}"><b>{{cat.category_title}}</b></a>: <a>{{cat.sub_title}}
+                        {% if cat.id == posts.category_id %}
+                            ({{ forloop.counter }} topics)
+                        {% endif %}
+                    </a></p><center>{% if not forloop.last %} <hr style="width:80%"> {% endif %}</center>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block js %}
+
+{% endblock %}

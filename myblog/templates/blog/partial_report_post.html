@@ -1,0 +1,31 @@
+{% load widget_tweaks %}
+{% load crispy_forms_tags %}
+
+{% block css %}
+{% endblock %}
+
+{% block body %}
+    {% with WIDGET_ERROR_CLASS='is-invalid' %}
+        <form action="/en/{{post.id}}/report_post/" method="post">
+            <div class="modal-content">
+                {% comment %} <div class="modal-header">
+                    <h5>Mail "{{ category.category_title }}" Moderator</h5>
+                </div> {% endcomment %}
+
+                <div class="modal-body">
+                    {% if sent %}
+                        <h>E-mail successfully sent</h1>
+                        <p>"Mail was successfully sent to {{ form.cleaned_data.to }}.</p>
+                    {% else %}
+                        {% csrf_token %}
+                        {% crispy form %}
+                    {% endif %}
+                </div>  
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</a>
+                    <button type="submit" class="submit-btn btn btn-primary">Send e-mail</button>
+                </div>
+            </div>
+        </form>
+    {% endwith %}
+{% endblock %}

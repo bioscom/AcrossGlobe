@@ -20,7 +20,8 @@ urlpatterns = i18n_patterns(
     path('hitcount/', include(('hitcount.urls', 'hitcount'), namespace='hitcount')),
     #path(r'^convert/', include('lazysignup.urls')),
     path('verification/', include('verify_email.urls')),
-    
+    path('ads/', include('ads.urls')),
+    path(_('shop/'), include('shop.urls')),
 ) 
 
 if settings.DEBUG:

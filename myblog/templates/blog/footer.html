@@ -1,0 +1,31 @@
+{% load i18n %}
+{% load static %}
+{% load ads_tags %}
+{% load my_tags %}
+
+<footer class="text-center mt-4" style="background-color:#4267B2">
+    <div class="row">
+      <div class="mx-auto col-10 col-md-8 col-lg-6 mt-2">
+        <form class="d-flex" method="POST" action="{% url 'MyBlog:search' %}"> 
+          {% csrf_token %}
+          <input class="form-control me-2" type="search" placeholder="Search" name="searched" id="searched" aria-label="Search">
+          <button href="{% url 'MyBlog:search' %}" class="btn btn-outline-light" type="submit">{% trans "Search" %}</button>
+        </form>
+      </div>
+    </div>
+      <span class="text-light" style="font-size:13px">
+        Links:<a class="text-light" style="font-size:13px" href="/news/">(1)</a>
+        <a class="text-light" style="font-size:13px" href="/news/?page=2">(2)</a>
+        <a class="text-light" style="font-size:13px" href="/news/?page=3">(3)</a>
+        <a class="text-light" style="font-size:13px" href="/news/?page=4">(4)</a>
+        <a class="text-light" style="font-size:13px" href="/news/?page=5">(5)</a>
+        <a class="text-light" style="font-size:13px" href="/news/?page=6">(6)</a>
+        <a class="text-light" style="font-size:13px" href="/news/?page=7">(7)</a>
+        <a class="text-light" style="font-size:13px" href="/news/?page=8">(8)</a>
+        <a class="text-light" style="font-size:13px" href="/news/?page=9">(9)</a>
+        <a class="text-light" style="font-size:13px" href="/news/?page=10">(10)</a>
+      </span>
+      <br>
+      <b><a class="text-light" href="/">Across Globe</a></b><span class="text-light"> - © Copyright 2023 Powered by <a class="text-light" href="/">White Oceans.</a>  All rights reserved.<br>
+      <b>Disclaimer:</b> You are responsible for what you post or upload on Acrossglobe.</span>
+  </footer>

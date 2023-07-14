@@ -12,13 +12,6 @@ from ckeditor.widgets import CKEditorWidget
 from ckeditor_uploader.widgets import CKEditorUploadingWidget
 
 
-CATEGORY_TYPES = [
-    ('1', 'General'),
-    ('2', 'Entertainment'),
-    ('3', 'Science/Technology'),
-]
-
-
 class CategoryForm(forms.ModelForm):
     class Meta:
         model = BlogPostCategories
@@ -38,13 +31,16 @@ class SubCategoryForm(forms.ModelForm):
 
 class BlogPostForm(forms.ModelForm):
     content = forms.CharField(widget=CKEditorUploadingWidget())
+    # image1 = forms.ImageField(label=_('File'),required=False, error_messages = {'invalid':_("Image files only")}, widget=forms.FileInput)
+    # image2 = forms.ImageField(label=_('File'),required=False, error_messages = {'invalid':_("Image files only")}, widget=forms.FileInput)
+    # image3 = forms.ImageField(label=_('File'),required=False, error_messages = {'invalid':_("Image files only")}, widget=forms.FileInput)
+    # image4 = forms.ImageField(label=_('File'),required=False, error_messages = {'invalid':_("Image files only")}, widget=forms.FileInput)
     class Meta:
         model = BlogPost
         # fields='__all__'
-        fields = ('title', 'content',)
+        fields = ('title', 'content', 'image1', 'image2', 'image3', 'image4',)
         widgets = {
             'title': forms.TextInput(attrs={'placeholder': 'Title of the Blog'}),
-            #"content": CKEditor5Widget(attrs={"class": "django_ckeditor_5"}, config_name="comment"),
         }
         labels = {
             'content': 'Message',
@@ -55,7 +51,7 @@ class SubBlogPostForm(forms.ModelForm):
     class Meta:
         model = SubBlogPost
         # fields='__all__'
-        fields = ('title', 'content',)
+        fields = ('title', 'content', 'image1', 'image2', 'image3', 'image4',)
         widgets = {
             'title': forms.TextInput(attrs={'placeholder': 'Title of the Blog'}),
             #"content": CKEditor5Widget(attrs={"class": "django_ckeditor_5"}, config_name="comment"),
@@ -63,109 +59,20 @@ class SubBlogPostForm(forms.ModelForm):
         labels = {
             'content': 'Message',
         }
-
-
-class FileUploadForm(forms.ModelForm):
-    # file = ClearableFileInput(label='Message:')
-    class Meta:
-        model = FileUploads
-        fields = ('file',)
-        #widgets = ClearableFileInput(attrs={'allow_multiple_selected': True})
-        widgets = {
-            'file': forms.ClearableFileInput(attrs={'allow_multiple_selected': True})
-        }
-        labels = {
-            'file': '',
-        }
-
-class SubFileUploadForm(forms.ModelForm):
-    # file = ClearableFileInput(label='Message:')
-    class Meta:
-        model = SubFileUploads
-        fields = ('file',)
-        #widgets = ClearableFileInput(attrs={'allow_multiple_selected': True})
-        widgets = {
-            'file': forms.ClearableFileInput(attrs={'allow_multiple_selected': True})
-        }
-        labels = {
-            'file': '',
-        }
-
-
-class CommentForm(forms.ModelForm):
-    content = forms.CharField(widget=CKEditorUploadingWidget())
-    class Meta:
-        model = Comment
-        fields = ('content',)
-        labels = {
-            'content': 'Message',
-        }
-
-class SubCommentForm(forms.ModelForm):
-    content = forms.CharField(widget=CKEditorUploadingWidget())
-    class Meta:
-        model = SubComment
-        fields = ('content',)
-        labels = {
-            'content': 'Message',
-        }
-   
-
-class Reply_CommentForm(forms.ModelForm):
-    content = forms.CharField(widget=CKEditorUploadingWidget())
-    class Meta:
-        model = Comment
-        fields = ('content',)
-        labels = {
-            'content': 'Message',
-        }
-
-
-class Reply_SubCommentForm(forms.ModelForm):
-    content = forms.CharField(widget=CKEditorUploadingWidget())
-    class Meta:
-        model = SubComment
-        fields = ('content',)
-        labels = {
-            'content': 'Message',
-        }
-
-
-class CommentFileUploadForm(forms.ModelForm):
-    class Meta:
-        model = CommentFileUploads
-        fields = ('file',)
-        widgets = {
-            'file': forms.ClearableFileInput(attrs={'allow_multiple_selected': True})
-        }
-        #widgets = ClearableFileInput(attrs={'allow_multiple_selected': True})
         
-        labels = {
-            'file': '',
-        }
-
-class SubCommentFileUploadForm(forms.ModelForm):
-    class Meta:
-        model = SubCommentFileUploads
-        fields = ('file',)
-        widgets = {
-            'file': forms.ClearableFileInput(attrs={'allow_multiple_selected': True})
-        }
-        #widgets = ClearableFileInput(attrs={'allow_multiple_selected': True})
-        
-        labels = {
-            'file': '',
-        }
 
 class EmailPostForm(forms.Form):
-    name = forms.CharField(max_length=25)
-    email = forms.EmailField()
+    #name = forms.CharField(max_length=25)
+    #email = forms.EmailField()
     recepient_email = forms.EmailField()
     comments = forms.CharField(required=False, widget=forms.Textarea)
     
 
 class EmailModeratorForm(forms.Form):
     subject = forms.CharField(max_length=200)
+    message = forms.CharField(required=False, widget=forms.Textarea)
+    
+class ReportPostForm(forms.Form):
     message = forms.CharField(required=False, widget=forms.Textarea)
 
 
@@ -180,19 +87,13 @@ class UserCreationForm(UserCreationFormBase):
 
 
 class AdvertisementForm(forms.ModelForm):
-    # def __init__(self, *args, **kwargs):
-    #     super().__init__(*args, **kwargs)
-    #     self.helper = FormHelper(self)
-    #     self.helper.form_action = reverse_lazy('advertisement')
-    #     self.helper.form_method = 'GET'
-    #     self.helper.add_input(Submit('submit', 'Submit'))
-    
-    
-    expiration_date = forms.DateField(label='Start Date:', widget=forms.DateInput(attrs={'type': 'date', 'min': datetime.now().date()}))
-    #expiration_date = forms.DateTimeField(input_formats=['%d/%m/%Y %H:%M'], widget=forms.DateTimeInput(attrs={'class': 'form-control datetimepicker-input', 'data-target': '#datetimepicker1'}))
     class Meta:
         model = Advertisement
         fields = ('urllink', 'image', )
+        widgets = {
+            'image': forms.ClearableFileInput(attrs={'allow_multiple_selected': True}),
+            'urllink': forms.TextInput(attrs={'placeholder': 'www.acrossglobe.com'}),
+        }
         labels = {
             'urllink': 'Landing Page',
         }

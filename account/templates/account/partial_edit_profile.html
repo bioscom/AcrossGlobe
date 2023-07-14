@@ -1,53 +1,137 @@
 {% load widget_tweaks %}
 {% load crispy_forms_tags %}
 
-
 {% block css %}
 {% endblock %}
-{% block body %}
 
-<div class="modal-content">
-    <div class="modal-header">
-        <h5><a href="#">Edit {{ user }} Profile</a></h5>
-    </div>
-    <form action="/account/edit_profile/" enctype="multipart/form-data" method="POST"> 
-        {% csrf_token %}
+{% block body %}
+<form action="/en/account/edit_profile/" enctype="multipart/form-data" method="POST"> 
+    {% csrf_token %}
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3>Edit {{ user }} Profile</h3>
+        </div>
+    
         <div class="modal-body">
-            <div class="row">
-                <div class="col-md-6">
-                    <label>Username:</label>
+            <div class="shadow p-3 mb-2 bg-body rounded">
+                <div class="row">
+                    <div class="col-md-3">
+                        <label><b>Email:</b></label>
+                    </div>
+                    <div class="col-md-6">
+                        <p>{{user.email}}</p>
+                    </div>
+                    <div class="col-md-3">
+                        <p><a href="#" hx-get="{% url 'request-new-link-from-email' %}" hx-target="#dialog"> Change Email </a></p>
+                    </div>
                 </div>
-                <div class="col-md-6">
-                    <p>{{user}}</p>
+                <div class="row">
+                    <div class="col-md-3">
+                        <label><b>Username:</b></label>
+                    </div>
+                    <div class="col-md-9">
+                        <p>{{user}}</p>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-3">
+                        <label><b>Full Name:</b></label>
+                    </div>
+                    <div class="col-md-9">
+                        <p>{{user.get_full_name}}</p>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-3">
+                        <label><b>Date Joined:</b></label>
+                    </div>
+                    <div class="col-md-9">
+                        <p>{{user.date_joined}}</p>
+                    </div>
                 </div>
             </div>
-            <div class="row">
-                <div class="col-md-6">
-                    <label>Full Name:</label>
+            
+            <div class="shadow p-3 mb-1 bg-body rounded">
+                {% comment %} {% crispy form %} {% endcomment %}
+                <div class="row mb-1">
+                    <div class="col-md-2">
+                        <label><b>Date of birth:</b></label>
+                    </div>
+                    <div class="col-md-10">
+                        {{form.date_of_birth}}
+                        <div class="invalid-feedback">{{ form.date_of_birth.errors|first }}</div>
+                    </div>
                 </div>
-                <div class="col-md-6">
-                    <p>{{user.get_full_name}}</p>
+                <div class="row mb-1">
+                    <div class="col-md-2">
+                        <label><b>Gender:</b></label>
+                    </div>
+                    <div class="col-md-10">
+                        {{form.gender}}
+                        {% comment %} {% render_field form.gender class="form-control" placeholder="" %} {% endcomment %}
+                    </div>
+                </div>
+                <div class="row mb-1">
+                    <div class="col-md-2">
+                        <label><b>Image:</b></label>
+                    </div>
+                    <div class="col-md-10">
+                        {{form.image}}
+                    </div>
+                </div>
+                <div class="row mb-1">
+                    <div class="col-md-2">
+                        <label><b>Phone no.:</b></label>
+                    </div>
+                    <div class="col-md-10">
+                        {{form.phone_no}}
+                        <div class="invalid-feedback">{{ form.phone_no.errors|first }}</div>
+                        {% comment %} {% render_field form.phone_no class="form-control" placeholder="" %} {% endcomment %}
+                    </div>
+                </div>
+                <div class="row mb-1">
+                    <div class="col-md-2">
+                        <label><b>Bio:</b></label>
+                    </div>
+                    <div class="col-md-10">
+                        {% render_field form.bio class="form-control" placeholder="" %}
+                    </div>
+                </div>
+                <div class="row mb-1">
+                    <div class="col-md-2">
+                        <label><b>Facebook:</b></label>
+                    </div>
+                    <div class="col-md-10">
+                        {% render_field form.facebook class="form-control" placeholder="" %}
+                    </div>
+                </div>
+                <div class="row mb-1">
+                    <div class="col-md-2">
+                        <label><b>Instagram:</b></label>
+                    </div>
+                    <div class="col-md-10">
+                        {% render_field form.instagram class="form-control" placeholder="" %}
+                    </div>
+                </div>
+                <div class="row mb-1">
+                    <div class="col-md-2">
+                        <label><b>Linkedin:</b></label>
+                    </div>
+                    <div class="col-md-10">
+                        {% render_field form.linkedin class="form-control" placeholder="" %}
+                    </div>
                 </div>
             </div>
-            <div class="row">
-                <div class="col-md-6">
-                    <label>Email:</label>
-                </div>
-                <div class="col-md-6">
-                    <p>{{user.email}}</p>
-                </div>
-            </div>
-            <hr>
-            {% crispy form %}
-            {% comment %} <button type="submit" class="btn btn-primary">Update</button> {% endcomment %}
         </div>  
         <div class="modal-footer">
+            <button type="button" class="btn btn-danger" hx-post="" data-bs-toggle="tooltip" data-bs-placement="bottom">Deactivate Account</button>
+            <span class="flex-grow-1"></span>
             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-            <input type="submit" value="Update" class="btn btn-primary">
-            {% comment %} <button type="submit" class="submit-btn btn btn-primary">Update</button> {% endcomment %}
+            <button type="submit" class="btn btn-primary">Update</button>
+            {% comment %} <input type="submit" value="Update" class="btn btn-primary"> {% endcomment %}
         </div>
-    </form>
-</div>
+    </div>
+</form>
 
 {% endblock %}
 {% block js %}

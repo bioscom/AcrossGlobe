@@ -1,0 +1,59 @@
+{% load i18n %}
+
+<!--Source: https://www.tutorialrepublic.com/codelab.php?topic=bootstrap&file=create-dynamic-tabs-via-data-attributes-->
+<div class="container mt-1 mb-1">
+  <div class="card">
+    {% comment %} <div class="card-header text-center">
+      <b>{% trans "ACROSS GLOBE REPORTING" %}</b>
+    </div> {% endcomment %}
+    <div class="card-body">
+      <ul class="nav nav-tabs" id="myTab">
+        <li class="nav-item">
+          <a href="#general" class="nav-link active" data-bs-toggle="tab"><b>Mainstream</b></a>
+        </li>
+        <li class="nav-item">
+          <a href="#entertainment" class="nav-link" data-bs-toggle="tab"><b>Leisure Activity</b></a>
+        </li>
+        <li class="nav-item">
+          <a href="#science" class="nav-link" data-bs-toggle="tab"><b>Technology Hub</b></a>
+        </li>
+
+        <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown"><b>International News</b></a>
+            <ul class="dropdown-menu">
+              {% for cat in categories %}
+                {% if cat.type_id == 4 %}
+                  <li>
+                    <a class="dropdown-item" href="/{{cat.slug}}/{{cat.id}}">{{cat.category_title}}</a>
+                  </li>
+                {% endif %}
+              {% endfor %}
+            </ul>
+        </li>
+      </ul>
+      <div class="tab-content ms-2">
+        <div class="tab-pane fade show active" id="general">
+            {% for cat in categories %}
+              {% if cat.type_id == 1 %}
+                <a href="/{{cat.slug}}/{{cat.id}}"><b>{{cat.category_title}}</b>{% if not forloop.last %}, {% endif %} </a>
+              {% endif %}
+            {% endfor %}
+        </div>
+        <div class="tab-pane fade" id="entertainment">
+            {% for cat in categories %}
+              {% if cat.type_id == 2 %}
+                <a href="/{{cat.slug}}/{{cat.id}}"><b>{{cat.category_title}}</b>{% if not forloop.last %}, {% endif %} </a>
+              {% endif %}
+            {% endfor %}
+        </div>
+        <div class="tab-pane fade" id="science">
+            {% for cat in categories %}
+              {% if cat.type_id == 3 %}
+                <a href="/{{cat.slug}}/{{cat.id}}"><b>{{cat.category_title}}</b>{% if not forloop.last %}, {% endif %} </a>
+              {% endif %}
+            {% endfor %}
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

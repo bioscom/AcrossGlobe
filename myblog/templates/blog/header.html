@@ -1,56 +1,68 @@
-<nav class="navbar navbar-expand-lg navbar-dark bg-primary sticky-top">
-    <div class="container">
-      <div class="navbar-header">
-        <a class="navbar-brand" href="/">acrossGlobe</a>
+{% load i18n %}
+{% load static %}
+{% load my_tags %}
+{% load humanize %}
+
+  <nav class="navbar navbar-expand-lg navbar-dark sticky-top" style="background-color:#4267B2">
+    <div class="container-fluid">
+      <a class="navbar-brand" href="/">
+        <img src="/media/logo/acrossglobe.gif" alt="..." width="58px" height="51px">
+      </a>
+      {% comment %} <div class="navbar-header"> {% endcomment %}
+        <a class="navbar-brand" href="/"><div style="font-stretch:ultra-condensed"><b>Across Globe Reporting</b></div></a>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
           <span class="navbar-toggler-icon"></span>
         </button>
-      </div>
+      {% comment %} </div> {% endcomment %}
 
       <div class="collapse navbar-collapse" id="navbarSupportedContent">
-      <div class="container mx-3 navbar-right">
-        <ul class="nav navbar-nav me-auto mb-2 mb-lg-0">
-          
-            {% comment %} <li class="nav-item">
-              <a class="nav-link {% block homeactive %} {% endblock homeactive %}" aria-current="page" href="/">Home</a>
-            </li> {% endcomment %}
-            {% if user.is_authenticated %}
-              {% comment %} <li class="nav-item">
-                <a class="nav-link {% block add_blogs_active %} {% endblock add_blogs_active %}" href="/add_blogs/">Add Blogs</a>
+        <div class="container mx-2" style="font-size:10px">
+          <ul class="nav navbar-nav mb-2 mb-lg-0">
+              {% if user.is_authenticated %}
+                  <li class="nav-item">
+                    <a class="nav-link active s" href="#" hx-get="{% url "profile" request.user.id %}" hx-target="#dialog">{% trans "Welcome, " %} {{request.user}}</a>
+                  </li>
+                {% else %}
+                  <a class="nav-link active s">{% trans "Welcome, Guest:" %} 
+                    <a href="#" class="nav-link active s" hx-get="{% url "register" %}" hx-target="#dialog">{% trans "Register On Across Globe" %},<a href="#" class="nav-link active s" hx-get="{% url "login" %}" hx-target="#dialog">{% trans "Login" %}</a></a>
+                  </a>
+              {% endif %}
+              
+              {% comment %}  <li {% if section == "people" %}class="selected"{% endif %}>
+                <a class="nav-link active" href="#" hx-get="/account/users/" hx-target="#dialog">{% trans "Registered Users" %}</a>
               </li> {% endcomment %}
-              <li class="nav-item">
-                <a class="nav-link active" href="/">Welcome {{request.user}}</a>
-              </li>
-              <li class="nav-item">
-                <a class="nav-link {% block profileactive %} {% endblock profileactive %}" href="/profile/{{request.user.id}}">Profile</a>
-              </li>
-              <li class="nav-item">
-                <a class="nav-link" href="/logout/">Logout</a>
-              </li>
-              {% else %}
-              <li class="nav-item">
-                <a class="nav-link {% block registeractive %} {% endblock registeractive %}" href="/register/">Register</a>
-              </li>
-              <li class="nav-item">
-                <a class="nav-link {% block loginactive %} {% endblock loginactive %}" href="/login/">Login</a>
-              </li>
-            {% endif %}
+          </ul>
+        </div>
 
-            {% comment %} <li {% if section == "people" %} class="selected"{% endif %}  class="nav-item">
-              <a class="nav-link" href="{% url "MyBlog:user_list" %}">People</a>
-            </li> {% endcomment %}
-          
-        </ul>
-      </div>
+        <span class="text-light" style="width:500px; font-size:14px"><b>Stats: </b>{% total_users %} members, {% total_posts %} topics. <br><b>Date:</b> {% now "l, j F Y" %} at {% now "h:i A" %}</span>
+        {% comment %} <span class="text-light" style="width:500px; font-size:14px"><b>Stats: </b>500,000,000 members, 90,000,000 topics. <br><b>Date:</b> {% now "l, j F Y" %} at {% now "h:i A" %}</span> {% endcomment %}
 
-     
-
-
-      <form class="d-flex" method="POST" action="/search/"> 
-        {% csrf_token %}
-        <input class="form-control me-2" type="search" placeholder="Search" name="searched" id="searched" aria-label="Search">
-        <button href="/search/" class="btn btn-outline-info" type="submit">Search</button>
-      </form>
+        {% comment %} {% include "blog/partial_language_selector.html" %} {% endcomment %}
+        {% include "blog/partial_user_login.html" %}
+        
       </div>
     </div>
   </nav>
+
+  <nav class="navbar navbar-expand-lg navbar-dark bg-light">
+    <div class="mx-auto col-10 col-md-8 col-lg-6 text-center">
+      <form class="d-flex" method="POST" action="{% url 'MyBlog:search' %}"> 
+        {% csrf_token %}
+        <input class="form-control me-1" type="search" placeholder="Search" name="searched" id="searched" aria-label="Search">
+        <button href="{% url 'MyBlog:search' %}"  class="btn btn-primary btn-outline-light" type="submit">{% trans "Search" %}</button>
+      </form>
+    </div> 
+  </nav>
+
+{% for message in messages %}
+  <div class="alert {{ message.tags }} alert-dismissible fade show" role="alert">
+    <div class="row">
+      <div class="text-center col-sm-11">
+        {{ message | safe }}
+      </div>
+      <div class="col-sm-1">
+        <button type="button" class="close" data-bs-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+      </div>
+    </div>
+  </div>
+{% endfor %}

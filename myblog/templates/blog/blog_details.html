@@ -4,7 +4,7 @@
 {% load thumbnail %}
 {% load social_share %}
 
-{% block title %} {{post.title | truncatechars:50}} {% endblock %}
+{% block title %} {{posts.title | truncatechars:50}} {% endblock %}
 
 {% block css %}
      
@@ -13,93 +13,187 @@
 {% block body %}
 {% load humanize %}
 
-      <div class="container mt-3 mb-1 text-center">
-            <h5>{{post.title}} - {{category.category_title}} - Across Globe</h5>
-            {% comment %} <a href="/blog/{{post.slug}}"><h5>{{post.title}} - {{category.category_title}} - acrossGlobe</h5><a> {% endcomment %}
-            <a href="/{{category.slug}}/{{category.id}}">{{category.category_title}}</a> / <a href="/{{post.slug}}">{{post.title}}</a><a> Comments ({{ comments.count }})  ({{ post.viewers.count }} Viewers)</a>
-            <a><p>Views: {% get_hit_count for post %}</p></a>
+      <div id="up" class="container mt-3 mb-1 text-center">
+            <h3>{{posts.title}} - {{category.category_title}} - Across Globe</h3>
+            <b><a href="/">Across globe</a> / <a href="/cat/{{cattype.id}}">{{cattype.type}}</a> / <a href="/{{category.slug}}/{{category.id}}">{{category.category_title}}</a> / <a href="/{{posts.slug}}">{{posts.title}}</a></b> <a> ({% get_hit_count for posts %} Views)</a>
       </div>
       
-      <div class="vertipics mt-2 text-center">
-            <a href="/hopto/home/17156" rel=sponsored><img src="https://www.nairaland.com/vertipics/6ez6otwqpwazgmvtld26kw3q2roijgou.png"></a>
-            <a href="/hopto/home/17074" rel=sponsored><img src="https://www.nairaland.com/vertipics/iqax0ww60vcft2zqxgm9ocus2dq86ae0.jpg"></a>
-            <a href="/hopto/home/15920" rel=sponsored><img src="https://www.nairaland.com/vertipics/1cqm2xehafkcin1q0te5z27n9tz69oy6.jpg"></a>
+      <div class="mb-2 text-center">
+            {% for p in popular_posts %}
+                  <a href="/{{p.slug}}/">{{p.title}}</a>
+                  {% if not forloop.last %}/{% endif %}
+            {% endfor %}
+            {% comment %} <a href="/{{category.category_title}}/{{category.id}}/?page=2">(2)</a>
+            <a href="/{{category.category_title}}/{{category.id}}/?page=3">(3)</a>
+            <a href="/{{category.category_title}}/{{category.id}}/?page=4">(4)</a> {% endcomment %}
       </div>
+      
+      
+      {% comment %} <div class="vertipics mt-2 mb-2 text-center">
+            <a href="#" hx-get="{% url 'MyBlog:adverts' %}" hx-target="#dialog" rel=sponsored><img src=""></a>
+            <a href="#" hx-get="{% url 'MyBlog:adverts' %}" hx-target="#dialog" rel=sponsored><img src=""></a>
+            <a href="#" hx-get="{% url 'MyBlog:adverts' %}" hx-target="#dialog" rel=sponsored><img src=""></a>
+      </div> {% endcomment %}
 
       <div class="container mt-3 mb-1 text-center">
-            <a href="#" hx-get="{% url 'MyBlog:add_comment' post.slug %}" hx-target="#dialog">(Reply)</a>
+            <b><a href="#" hx-get="{% url 'MyBlog:add_comment' posts.slug %}" hx-target="#dialog">(Reply) <a href="#down">(Go Down)</a></a></b>
       </div>
 
-      {% comment %} hx-get="{% url 'MyBlog:blog_details' post.slug %}" {% endcomment %}
+      {% if comments.has_other_pages %}
+            <nav aria-label="Page navigation">
+                  <ul class="pagination justify-content-center">
+                        {% if comments.has_previous %}
+                        <li class="page-item">
+                              <a class="page-link" href="?page={{ comments.previous_page_number }}">Previous</a>
+                        </li>
+                        {% else %}
+                        <li class="page-link disabled" aria-disabled="true"><span>Previous</span></li>
+                        {% endif %}
+                        {% for i in comments.paginator.page_range %}
+                        {% if comments.number == i %}
+                              <li class="page-item active">
+                                    <a class="page-link">{{ i }}</a>
+                              </li>
+                        {% else %}
+                              <li class="page-item">
+                                    <a class="page-link" href="?page={{ i }}">{{ i }}</a>
+                              </li>
+                        {% endif %}
+                        {% endfor %}
+                        {% if comments.has_next %}
+                        <li class="page-item">
+                              <a class="page-link" href="?page={{ comments.next_page_number }}">Next</a>
+                        </li>
+                        {% else %}
+                        <li class="page-link disabled"><span>Next</span></li>
+                        {% endif %}
+                  </ul>
+            </nav>
+      {% endif %}
 
-      <div class="container mt-3 mb-1">
-            <div class="card">  
-                  <div class="card-header" style="background-color: #ADD8E6;">
+      <div class="container mt-3 mb-3">
+            {% if comments.number < 2 %}
+            <div id="{{posts.id}}" class="card shadow">  
+                  <div class="card-header">
                         <h5 class="blog-post-title">
-                              <a href="/{{post.slug}}">{{post.title}}</a>
+                              <a href="/{{posts.slug}}">{{posts.title}}</a>
                               <small>by</small> 
-                              <span style="font-size: 18px;"><a class="font-weight-bold text-success" href="#" hx-get="/account/user_profile/{{post.author.id}}/" hx-target="#dialog">{{post.author}}</a></span>
-                              <span style="font-size: 12px;">{{post.dateTime}}</span>
+                              <span style="font-size: 18px;"><a class="user" href="#" hx-get="/account/user_profile/{{posts.author.id}}/" hx-target="#dialog">{{posts.author}}</a></span>
+                              <span style="font-size: 12px;"><b>{{posts.dateTime}}</b></span>
                         </h5> 
                   </div>
-                  <div class="card-body" style="background-color: #F7FBFB">
-                        <h7 class="card-text">{{post.content|safe}}</h7>  
+                  <div class="card-body">
+                        <h7 class="card-text">{{posts.content|safe}}</h7>  
 
-                        {% if user.is_authenticated %} {% if user.id == post.author.id %} <a class="font-weight-bold text-success" href="#" hx-get="{% url 'MyBlog:update_post' post.slug %}" hx-target="#dialog">(Modify)</a> {% endif %} {% endif %} 
-                        {% comment %} {% if user.id != post.author.id %} <a href="#" class="font-weight-bold text-success" hx-get="{% url 'MyBlog:add_comment' post.slug %}" hx-target="#dialog">(Quote)</a>{% endif %} {% endcomment %}
-                        {% if user.id != post.author.id %} <a href="#" class="font-weight-bold text-success" hx-get="{% url 'MyBlog:reply_post' post.slug %}" hx-target="#dialog">(Quote)</a>{% endif %}
-                               
-                        <!-- Like/Unlike Post-->
-                        | {% with total_likes=post.users_like.count users_like=post.users_like.all %}
+                        {% if user.is_authenticated %} {% if user.id == posts.author.id %} <a class="font-weight-bold user" href="#" hx-get="{% url 'MyBlog:update_post' posts.slug %}" hx-target="#dialog">(Modify)</a> {% endif %} {% endif %} 
+                        {% if user.id != posts.author.id %} <a href="#" class="font-weight-bold user" hx-get="{% url 'MyBlog:reply_post' posts.id %}" hx-target="#dialog">(Quote)</a>{% endif %}
+                        | <a href="#" class="font-weight-bold user" hx-get="{% url 'MyBlog:report_post' posts.id %}" hx-target="#dialog">(Report)</a>
+                        <!-- Like/Unlike post-->
+                        | {% with total_likes=posts.users_like.count users_like=posts.users_like.all %}
                               <span class="count">
                                     <span class="total">{{ total_likes }}</span> 
                                     like{{ total_likes|pluralize }}
                               </span>
                               {% if user.is_authenticated %}
-                                    <a class="font-weight-bold text-success" href="#" data-id="{{ post.id }}" data-action="{% if request.user in users_like %}un{% endif %}like" class="like button">
-                                          {% if request.user not in users_like %} Like {% else %} Unlike {% endif %}
+                                    <a href="#" data-id="{{ posts.id }}" data-action="{% if request.user in users_like %}un{% endif %}like" class="like button font-weight-bold user">
+                                          {% if request.user not in users_like %} 
+                                                Like 
+                                          {% else %} 
+                                                Unlike 
+                                          {% endif %}
                                     </a>
                               {% endif %}
                         {% endwith %}
                         <!-- end -->
-                        | <a class="font-weight-bold text-success" href="#" hx-get="{% url 'MyBlog:post_share' post.id %}" hx-target="#dialog">Email</a>
+                        | <a class="font-weight-bold user" href="#" hx-get="{% url 'MyBlog:post_share' posts.id %}" hx-target="#dialog">Email</a>
                         | {% post_to_facebook object_or_url "Facebook" %}
                         | {% post_to_telegram object_or_url "Telegram" %}
                         | {% post_to_twitter object_or_url "Twitter" %}
                         | {% post_to_whatsapp object_or_url "Whatsapp" %}
-                           
-                        {% comment %} {% if files.count > 0 %}<br><br>{% endif %} {% endcomment %}
-                        <div class="mb-2"></div>
-                        {% for f in files %}<img src="/media/{{f.file}}" class="img-fluid mb-1">{% endfor %}
+                        
+                        {% if posts.image1 %}<div class="mb-1 mt-1"><img src="/media/{{posts.image1}}" class="img-fluid mb-1"></div>{% endif %}
+                        {% if posts.image2 %}<div class="mb-1"><img src="/media/{{posts.image2}}" class="img-fluid mb-1"></div>{% endif %}
+                        {% if posts.image3 %}<div class="mb-1"><img src="/media/{{posts.image3}}" class="img-fluid mb-1"></div>{% endif %}
+                        {% if posts.image4 %}<div class="mb-1"><img src="/media/{{posts.image4}}" class="img-fluid"></div>{% endif %}
                   </div>   
             </div>
+            {% endif %}
+
             {% include "blog/blog_details_comments.html" %}
       </div>
 
-      <div class="vertipics mt-2 mb-2 text-center">
-            <a href="/hopto/home/17156" rel=sponsored><img src="https://www.nairaland.com/vertipics/6ez6otwqpwazgmvtld26kw3q2roijgou.png"></a>
-            <a href="/hopto/home/17074" rel=sponsored><img src="https://www.nairaland.com/vertipics/iqax0ww60vcft2zqxgm9ocus2dq86ae0.jpg"></a>
-            <a href="/hopto/home/15920" rel=sponsored><img src="https://www.nairaland.com/vertipics/1cqm2xehafkcin1q0te5z27n9tz69oy6.jpg"></a>
+      {% if comments.has_other_pages %}
+            <nav aria-label="Page navigation">
+                  <ul class="pagination justify-content-center">
+                        {% if comments.has_previous %}
+                              <li class="page-item">
+                                    <a class="page-link" href="?page={{ comments.previous_page_number }}">Previous</a>
+                              </li>
+                        {% else %}
+                              <li class="page-link disabled" aria-disabled="true"><span>Previous</span></li>
+                        {% endif %}
+                        {% for i in comments.paginator.page_range %}
+                              {% if comments.number == i %}
+                                    <li class="page-item active">
+                                          <a class="page-link">{{ i }}</a>
+                                    </li>
+                              {% else %}
+                                    <li class="page-item">
+                                          <a class="page-link" href="?page={{ i }}">{{ i }}</a>
+                                    </li>
+                              {% endif %}
+                        {% endfor %}
+                        {% if comments.has_next %}
+                              <li class="page-item">
+                                    <a class="page-link" href="?page={{ comments.next_page_number }}">Next</a>
+                              </li>
+                        {% else %}
+                              <li class="page-link disabled"><span>Next</span></li>
+                        {% endif %}
+                  </ul>
+            </nav>
+      {% endif %}
+    
+
+      <div class="container mt-3 mb-1 text-center">
+            <b><a href="#" hx-get="{% url 'MyBlog:add_comment' posts.slug %}" hx-target="#dialog">(Reply)</a></b>
       </div>
+
+      {% comment %} <div class="vertipics mt-2 mb-2 text-center">
+            <a href="#" hx-get="{% url 'MyBlog:adverts' %}" hx-target="#dialog" rel=sponsored><img src=""></a>
+            <a href="#" hx-get="{% url 'MyBlog:adverts' %}" hx-target="#dialog" rel=sponsored><img src=""></a>
+            <a href="#" hx-get="{% url 'MyBlog:adverts' %}" hx-target="#dialog" rel=sponsored><img src=""></a>
+      </div> {% endcomment %}
 
       <div class="mb-2">
             {% for title in datas.title.all %}
-                  <a href="#" hx-get="/user_profile/{{post.author.id}}/">{{title}}, </a> 
+                  <a href="#" hx-get="/account/user_profile/{{posts.author.id}}/">{{title}}, </a> 
             {% endfor %}
       </div>
-      
-      <div class="mb-2">
+
+      <div class="mb-2 text-center">
+            {% for p in least_popular_posts %}
+                  <a href="/{{p.slug}}">{{p.title}}</a>
+                  {% if not forloop.last %}/{% endif %}
+            {% endfor %}
+      </div>
+
+      <div id="down" class="mb-2 text-center">
             <b>Viewing this topic:</b>
             {% for viewer in datas.viewers.all %}
-                  <a href="#" hx-get="/user_profile/{{post.author.id}}/" hx-target="#dialog">{{viewer}}, </a> 
+                  <a href="#" hx-get="/account/user_profile/{{viewer.id}}/" hx-target="#dialog">{{viewer}}</a>
+                  {% if not forloop.last %}, {% endif %}
             {% endfor %}
+            and {{guest_user}} guest(s)
       </div>
       
+      <div id="down" class="mb-2 text-center">
+            <a href="#up"><b>(Go Up)</b></a>
+      </div>
 
 {% endblock %}
 
 {% block domready %}
-
       $('a.like').click(function(e){
             e.preventDefault();
             $.post('{% url "MyBlog:like" %}',
@@ -131,49 +225,46 @@
 
 
 
-      {% comment %} {% for user in post.viewers %}
-          {{ user.username}}, 
-      {% endfor %} {% endcomment %}
+{% comment %} {% for user in post.viewers %}
+      {{ user.username}}, 
+{% endfor %} {% endcomment %}
 
-      {% comment %} {% for post in post.seen_by.all %}
-            {{ seen_by }}, 
-      {% endfor %}    {% endcomment %}
+{% comment %} {% for post in post.seen_by.all %}
+      {{ seen_by }}, 
+{% endfor %}    {% endcomment %}
 
-            
-      {% comment %} {% for viewer in datas.viewers.all %}
-            {{ viewer }}, 
-      {% endfor %}         {% endcomment %}
-                        
       
+{% comment %} {% for viewer in datas.viewers.all %}
+      {{ viewer }}, 
+{% endfor %}         {% endcomment %}
+                  
 
-      {% comment %} <img src="/media/{{post.image}}" alt="" height="250px" width="500px"> {% endcomment %}  
 
-
-
-       {% comment %} {% if user.is_authenticated %}
-                  <div class="container">
-                        <h5>Add Comments Here</h5>
-                        <form action="/blog/{{post.slug}}/" method="POST"> {% csrf_token %}
-                              <div class="form-floating">
-                                    <textarea class="form-control" placeholder="Leave a comment here" id="floatingTextarea2"
-                                          style="height: 100px" id="content" name="content">
-                                    </textarea>
-                                    <!--<label for="floatingTextarea2">Leave a comment here.</label>-->
-                                    <br>
-                                    <button type="submit" class="btn btn-primary">Submit</button>
-                              </div>   
-                        </form>
-                  </div>      
-            {% else %}
-                  <div class="container">
-                        <h4><a href="/login/">Login</a> to post comments below.</h4> 
-                  </div>
-            {% endif %} 
-
-            <br>
-            <div class="alert alert-danger">
-                  <h5><b>Disclaimer</b></h5>
-                  <p>Comments expressed here do not reflect the opinions of acrossGlobe.com. You are <b>solely responsible</b> for <b>anything posted or uploaded</b></p>
+{% comment %} <img src="/media/{{post.image}}" alt="" height="250px" width="500px"> {% endcomment %}
+      {% comment %} {% if user.is_authenticated %}
+            <div class="container">
+                  <h5>Add Comments Here</h5>
+                  <form action="/blog/{{post.slug}}/" method="post"> {% csrf_token %}
+                        <div class="form-floating">
+                              <textarea class="form-control" placeholder="Leave a comment here" id="floatingTextarea2"
+                                    style="height: 100px" id="content" name="content">
+                              </textarea>
+                              <!--<label for="floatingTextarea2">Leave a comment here.</label>-->
+                              <br>
+                              <button type="submit" class="btn btn-primary">Submit</button>
+                        </div>   
+                  </form>
+            </div>      
+      {% else %}
+            <div class="container">
+                  <h4><a href="/login/">Login</a> to post comments below.</h4> 
             </div>
-            <h5>All Comments ({{comments.count}})</h5>
-            <br>{% endcomment %}
+      {% endif %} 
+
+      <br>
+      <div class="alert alert-danger">
+            <h5><b>Disclaimer</b></h5>
+            <p>Comments expressed here do not reflect the opinions of acrossGlobe.com. You are <b>solely responsible</b> for <b>anything posted or uploaded</b></p>
+      </div>
+      <h5>All Comments ({{comments.count}})</h5>
+      <br>{% endcomment %}

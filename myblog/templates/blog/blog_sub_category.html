@@ -15,60 +15,36 @@
 
 <div class="text-center">
   <h2 class="card-title">{{subcategories.title}} - Across Globe</h2>
-  <p><b font-size:18px><a href="/">Across globe</a> / <a href="/sub/{{subcategories.slug}}/">{{subcategories.title}}</a></b></p>
-  <p class="mt-3"><a href="/sub/{{subcategories.slug}}/">{{subcategories.title}}</a>: <a>{{subcategories.title}} <b>Ad Rate:{{category.adrate|floatformat:2|intcomma}}</b>/week ({{category.discount}}% premium) </a></p>
+  <p><b font-size:18px><a href="/">Across globe</a> / <a href="/{{category.slug}}/{{category.id}}">{{category.category_title}}</a> / <a href="/sub/{{subcategories.slug}}/">{{subcategories.title}}</a></b></p>
+  {% comment %} <p class="mt-3"><a href="/sub/{{subcategories.slug}}/">{{subcategories.title}}</a>: <a>{{subcategories.title}} <b>Ad Rate:{{category.adrate|floatformat:2|intcomma}}</b>/week ({{category.discount}}% premium) </a></p> {% endcomment %}
 </div>
 
 
-<div class="vertipics mt-2 mb-2 text-center">
-  <a href="/hopto/home/17156" rel=sponsored><img src="https://www.nairaland.com/vertipics/6ez6otwqpwazgmvtld26kw3q2roijgou.png"></a>
-  <a href="/hopto/home/17074" rel=sponsored><img src="https://www.nairaland.com/vertipics/iqax0ww60vcft2zqxgm9ocus2dq86ae0.jpg"></a>
-  <a href="/hopto/home/15920" rel=sponsored><img src="https://www.nairaland.com/vertipics/1cqm2xehafkcin1q0te5z27n9tz69oy6.jpg"></a>
-</div>
+{% comment %} <div class="vertipics mt-2 mb-2 text-center">
+  <a href="#" hx-get="{% url 'MyBlog:adverts' %}" hx-target="#dialog" rel=sponsored><img src="https://www.nairaland.com/vertipics/6ez6otwqpwazgmvtld26kw3q2roijgou.png"></a>
+  <a href="#" hx-get="{% url 'MyBlog:adverts' %}" hx-target="#dialog" rel=sponsored><img src="https://www.nairaland.com/vertipics/iqax0ww60vcft2zqxgm9ocus2dq86ae0.jpg"></a>
+  <a href="#" hx-get="{% url 'MyBlog:adverts' %}" hx-target="#dialog" rel=sponsored><img src="https://www.nairaland.com/vertipics/1cqm2xehafkcin1q0te5z27n9tz69oy6.jpg"></a>
+</div> {% endcomment %}
 
-<div class="text-center">
-  <a href="#" hx-get="{% url 'MyBlog:add_subtopic' subcategories.id %}" hx-target="#dialog">(Create New Topic)</a>
-  {% comment %} <a href="{% url 'MyBlog:adverts' category.slug %}"> (Advertise in {{category.category_title}})</a>  {% endcomment %}
-  <a href="#" hx-get="{% url 'MyBlog:ad_adverts' subcategories.slug %}" hx-target="#dialog"> (Advertise in {{subcategories.title}})</a>
+<div class="text-center mt-2 mb-2">
+  {% if subcategories.title == 'Muslims Forum' %}
+      <a href="#" hx-get="{% url 'MyBlog:add_sub_post' subcategories.id %}" hx-target="#dialog">(Create New Topic)</a>
+  {% elif not subcategories.title == 'Muslims Forum' and user.is_superuser %}
+      <a href="#" hx-get="{% url 'MyBlog:add_sub_post' subcategories.id %}" hx-target="#dialog">(Create New Topic)</a>
+  {% endif %}
+  {% comment %} <a href="#" hx-get="{% url 'MyBlog:adverts' %}" hx-target="#dialog"> (Advertise in {{subcategories.title}})</a> {% endcomment %}
   <a href="#" hx-get="{% url 'MyBlog:mail_moderator' subcategories.id %}" hx-target="#dialog">(Mail Moderators)</a>
-  
 </div>
 
 {% include "blog/blog_sub_category_ajax.html" %}
 
-<div class="vertipics mt-2 mb-2 text-center">
-  <a href="/hopto/home/17156" rel=sponsored><img src="https://www.nairaland.com/vertipics/6ez6otwqpwazgmvtld26kw3q2roijgou.png"></a>
-  <a href="/hopto/home/17074" rel=sponsored><img src="https://www.nairaland.com/vertipics/iqax0ww60vcft2zqxgm9ocus2dq86ae0.jpg"></a>
-  <a href="/hopto/home/15920" rel=sponsored><img src="https://www.nairaland.com/vertipics/1cqm2xehafkcin1q0te5z27n9tz69oy6.jpg"></a>
-</div>
+{% comment %} <div class="vertipics mt-2 mb-2 text-center">
+  <a href="#" hx-get="{% url 'MyBlog:adverts' %}" hx-target="#dialog" rel=sponsored><img src="https://www.nairaland.com/vertipics/6ez6otwqpwazgmvtld26kw3q2roijgou.png"></a>
+  <a href="#" hx-get="{% url 'MyBlog:adverts' %}" hx-target="#dialog" rel=sponsored><img src="https://www.nairaland.com/vertipics/iqax0ww60vcft2zqxgm9ocus2dq86ae0.jpg"></a>
+  <a href="#" hx-get="{% url 'MyBlog:adverts' %}" hx-target="#dialog" rel=sponsored><img src="https://www.nairaland.com/vertipics/1cqm2xehafkcin1q0te5z27n9tz69oy6.jpg"></a>
+</div> {% endcomment %}
 
-       
-{% comment %} <nav aria-label="Page navigation conatiner"></nav>
-  <ul class="pagination justify-content-center">
-    {% if posts.has_previous %}
-        <a href="?page={{ 1 }}">◀️◀️</a>
-        <a href="?page={{ posts.previous_page_number }}">◀️</a>
-    {% endif%}
-
-    <a>{{posts.number}} of {{posts.paginator.num_pages}}</a>
-
-    {% if posts.has_next %}
-        <a href="?page={{ posts.next_page_number }}">▶️</a>
-        <a href="?page={{ posts.paginator.num_pages }}">▶️▶️</a>
-    {% endif%}
-  </ul>
-</nav> {% endcomment %}
-    {% comment %} <hr>
-
-    {% for page_number in page_obj.paginator.page_range %}
-        <a
-            href="{% url 'terms-by-page' page_number %}"
-            class="{% if page_number == page_obj.number %}current{% endif %}"
-        >
-            {{page_number}}
-        </a>
-    {% endfor %} {% endcomment %}
-
+      
 
 
 {% endblock %}

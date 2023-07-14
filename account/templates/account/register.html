@@ -9,48 +9,48 @@
     <form hx-post="{{ request.path }}" hx-headers='{"X-CSRFToken":"{{ csrf_token }}"}' class="modal-content">
       {% comment %} {% csrf_token %} {% endcomment %}
 
-      <tbody hx-trigger="load, postChanged from:body" hx-target="this">
+      {% comment %} <tbody hx-trigger="load, postChanged from:body" hx-target="this">
         <tr>
-          <td class="spinner-border" role="status">
+          <td class="spinner-border" role="status"> {% endcomment %}
             <div class="modal-header">
-              <h2>Create an account</h2>
+              <h3>Create an account</h3>
             </div>
-            <div class="modal-body">
+            <div class="modal-body col-sm-12">
               <p>Please, sign up using this form:</p>
-              <div class="mb-3">
-                <label for="{{ user_form.username.id_for_label }}" class="form-label">Username</label>
-                {% render_field user_form.username class="form-control" placeholder="" %}
-                <div class="invalid-feedback">{{ user_form.username.errors|first }}</div>
+              <div class="mb-2 row">
+                <div class="col-sm-2"><label for="{{ user_form.username.id_for_label }}" class="form-label">Username</label></div>
+                <div class="col-sm-10">{% render_field user_form.username class="form-control" placeholder="" %}</div>
+                <div class="col-md-8 offset-md-2 text-danger">{{ user_form.username.errors|first }}</div>
               </div>
     
-              <div class="mb-3">
-                <label for="{{ user_form.first_name.id_for_label }}" class="form-label">First Name</label>
-                {% render_field user_form.first_name class="form-control" placeholder="" %}
-                <div class="invalid-feedback">{{ user_form.first_name.errors|first }}</div>
+              <div class="mb-2 row">
+                <div class="col-sm-2"><label for="{{ user_form.first_name.id_for_label }}" class="form-label">First Name</label></div>
+                <div class="col-sm-10">{% render_field user_form.first_name class="form-control" placeholder="" %}</div>
+                <div class="col-md-8 offset-md-2 text-danger">{{ user_form.first_name.errors|first }}</div>
               </div>
     
-              <div class="mb-3">
-                <label for="{{ user_form.last_name.id_for_label }}" class="form-label">Last Name</label>
-                {% render_field user_form.last_name class="form-control" placeholder="" %}
-                <div class="invalid-feedback">{{ user_form.last_name.errors|first }}</div>
+              <div class="mb-2 row">
+                <div class="col-sm-2"><label for="{{ user_form.last_name.id_for_label }}" class="form-label">Last Name</label></div>
+                <div class="col-sm-10">{% render_field user_form.last_name class="form-control" placeholder="" %}</div>
+                <div class="col-md-8 offset-md-2 text-danger">{{ user_form.last_name.errors|first }}</div>
               </div>
     
-              <div class="mb-3">
-                <label for="{{ user_form.email.id_for_label }}" class="form-label">Email Address</label>
-                {% render_field user_form.email class="form-control" placeholder="" %}
-                <div class="invalid-feedback">{{ user_form.email.errors|first }}</div>
+              <div class="mb-2 row">
+                <div class="col-sm-2"><label for="{{ user_form.email.id_for_label }}" class="form-label">Email Address</label></div>
+                <div class="col-sm-10">{% render_field user_form.email class="form-control" placeholder="" %}</div>
+                <div class="col-md-8 offset-md-2 text-danger">{{ user_form.email.errors|first }}</div>
               </div>
     
-              <div class="mb-3">
-                <label for="{{ user_form.password.id_for_label }}" class="form-label">Password</label>
-                {% render_field user_form.password class="form-control" placeholder="" %}
-                <div class="invalid-feedback">{{ user_form.password.errors|first }}</div>
+              <div class="mb-2 row">
+                <div class="col-sm-2"><label for="{{ user_form.password.id_for_label }}" class="form-label">Password</label></div>
+                <div class="col-sm-10">{% render_field user_form.password class="form-control" placeholder="" %}</div>
+                <div class="col-md-8 offset-md-2 text-danger">{{ user_form.password.errors|first }}</div>
               </div>
     
-              <div class="mb-3">
-                <label for="{{ user_form.password2.id_for_label }}" class="form-label">Repeat password</label>
-                {% render_field user_form.password2 class="form-control" placeholder="" %}
-                <div class="invalid-feedback">{{ user_form.password2.errors|first }}</div>
+              <div class="mb-2 row">
+                <div class="col-sm-2"><label for="{{ user_form.password2.id_for_label }}" class="form-label"><small>Repeat password</small></label></div>
+                <div class="col-sm-10">{% render_field user_form.password2 class="form-control" placeholder="" %}</div>
+                <div class="col-md-8 offset-md-2 text-danger">{{ user_form.password2.errors|first }}</div>
               </div>
               {% comment %} {% crispy user_form %} {% endcomment %}
             </div>
@@ -59,9 +59,17 @@
               <button type="submit" value="Create my account" class="btn btn-primary">Create my account</button>
             </div>
 
-          </td>
+           
+
+          {% comment %} </td>
         </tr>
-      </tbody>
+      </tbody> {% endcomment %}
     </form>
   {% endwith %}
 {% endblock %}
+
+<script>
+  $("#registerMe").on("click", function() {
+      $(this).prop("disabled", true);
+  });
+</script>

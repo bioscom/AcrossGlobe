@@ -7,13 +7,19 @@ from django.conf import settings
 class BlogPostAdmin(admin.ModelAdmin):
     list_display=('title', 'author', 'is_approved', 'dateTime')
     list_filter=('is_approved', 'author', 'dateTime')
+    
+@admin.register(SubBlogPost)
+class SubBlogPostAdmin(admin.ModelAdmin):
+    list_display=('title', 'author', 'is_approved', 'dateTime')
+    list_filter=('is_approved', 'author', 'dateTime')
 
 admin.site.register(TypeCategories)
 admin.site.register(BlogPostCategories)
 admin.site.register(Advertisement)
+admin.site.register(Paginating)
 @admin.register(BlogPostSubCategories)
 class BlogPostSubCategoriesAdmin(admin.ModelAdmin):
     list_display=('title', 'moderatoremail', 'sub_title')
     
     
-admin.site.register(Comment)
+#admin.site.register(Comment)

@@ -1,0 +1,35 @@
+{% load widget_tweaks %}
+{% load crispy_forms_tags %}
+
+{% block css %}
+{% endblock %}
+
+{% block body %}
+    <form action="{{request.path}}" method='POST'>
+        <div class="modal-content"
+        style="height: auto; margin-bottom: 0px; margin-top: 100px; padding: 10px; border: 0px solid red;
+            background-color: rgb(255, 255, 255); border-radius: 10px; box-shadow: rgba(17, 12, 46, 0.15) 0px 48px 100px 0px;">
+            <div class="modal-header">
+                <h2>Request New Email for Verification</h2>
+            </div>
+            <div class="modal-body" style="background-color: #deeff;">
+                {% csrf_token %}
+                <fieldset>
+                    {% comment %} {{form}} {% endcomment %}
+                    <div class="row mb-1">
+                        <div class="col-md-3">
+                            <label><b>email address:</b></label>
+                        </div>
+                        <div class="col-md-9">
+                        {% render_field form.email class="form-control" placeholder="enter new email for verification" %}
+                        </div>
+                    </div>
+                </fieldset>
+            </div> 
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</a>
+                <button class="btn btn-primary" type="submit">Request New Email</button>
+            </div> 
+        </div>
+    </form>
+{% endblock %}

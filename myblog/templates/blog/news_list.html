@@ -1,0 +1,56 @@
+{% extends 'base.html' %}
+{% load i18n %}
+
+{% block title %} {% trans "Across the Globe" %} {% endblock %}
+{% block homeactive %} active {% endblock homeactive %}
+
+{% block css %}
+<style>
+  table { border-collapse: collapse; }
+    tr { display: block; float: left; }
+    th, td { display: block; border: 1px; }
+</style>
+
+{% endblock %}
+
+{% block body %}
+
+<div class="text-center mb-2 mt-1">
+  <h3>Featured News</h3>
+  <p><a href="/">Across globe</a> / <a href="/news/">Featured News & Discussion</a></p>
+</div>
+
+{% include "blog/blog_list_ajax.html" %}
+
+{% include "blog/membersonline.html" %}
+
+{% endblock %}
+
+
+{% block domready %}
+  var page = 1;
+  var empty_page = false;
+  var block_request = false;
+
+  $(window).scroll(function() {
+    var margin = $(document).height() - $(window).height() - 200;
+    if($(window).scrollTop() > margin && empty_page == false && block_request == false) {
+      block_request = true;
+      page += 1;
+      $.get('?page=' + page, function(data) {
+        if(data == '') {
+          empty_page = true;
+        }
+        else {
+          block_request = false;
+          $('#image-list').append(data);
+        }
+      });
+    }
+  });
+{% endblock %}
+
+
+{% block js %} 
+
+{% endblock %}

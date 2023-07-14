@@ -1,29 +1,151 @@
 {% extends 'base.html' %}
+{% load hitcount_tags %}
+{% load social_share %}
+{% load my_tags %}
 
 {% block title %} Edit Page {% endblock %}
 
 {% block css %}
+
 {% endblock %}
 
 {% block body %}
-  {% if searched %}
-    <div class="container mt-5 mb-3">
-        <div class="row">
-            {% for blog in blogs %}
-            <div class="col-lg-4 my-4">
-                <div class="card shadow" style="width: 20rem; height: 33rem;">
-                    <img src="/media/{{blog.image}}" class="card-img-top" alt="..." height="250px">
-                    <div class="card-body">
-                      <h5 class="card-title">{{blog.title}} <br><small>by {{blog.author}}</small></h5>
-                      <p class="card-text">{{blog.content| truncatechars:210}}</p>
-                      <a href="/blog/{{blog.slug}}" class="btn btn-primary">Read More {% if user.is_superuser %}<a href="/delete_blog_post/{{blog.slug}}/" class="btn btn-danger mx-4">Delete Blog</a>{% endif %}</a>
-                    </div>
-                  </div>
-            </div>
+
+{% comment %} <div class="vertipics mt-2 mb-2 text-center">
+  <a href="#" hx-get="{% url 'MyBlog:adverts' %}" hx-target="#dialog" rel=sponsored><img src="https://www.nairaland.com/vertipics/6ez6otwqpwazgmvtld26kw3q2roijgou.png"></a>
+  <a href="#" hx-get="{% url 'MyBlog:adverts' %}" hx-target="#dialog" rel=sponsored><img src="https://www.nairaland.com/vertipics/iqax0ww60vcft2zqxgm9ocus2dq86ae0.jpg"></a>
+  <a href="#" hx-get="{% url 'MyBlog:adverts' %}" hx-target="#dialog" rel=sponsored><img src="https://www.nairaland.com/vertipics/1cqm2xehafkcin1q0te5z27n9tz69oy6.jpg"></a>
+</div> {% endcomment %}
+
+  {% if posts.has_other_pages %}
+    <nav aria-label="Page navigation">
+        <ul class="pagination justify-content-center">
+            {% if posts.has_previous %}
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ posts.previous_page_number }}">Previous</a>
+                </li>
+            {% else %}
+                <li class="page-link disabled" aria-disabled="true"><span>Previous</span></li>
+            {% endif %}
+            {% for i in posts.paginator.page_range %}
+                {% if posts.number == i %}
+                    <li class="page-item active">
+                        <a class="page-link">{{ i }}</a>
+                    </li>
+                {% else %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ i }}">{{ i }}</a>
+                    </li>
+                {% endif %}
             {% endfor %}
+            {% if posts.has_next %}
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ posts.next_page_number }}">Next</a>
+                </li>
+            {% else %}
+                <li class="page-link disabled"><span>Next</span></li>
+            {% endif %}
+        </ul>
+    </nav>
+  {% endif %}
+
+
+  {% if searched %}
+    <div id="up" class="container mt-2 mb-2">
+      {% for post in posts %}
+            <div class="card">  
+              <div class="card-header">
+                <h5 class="blog-post-title">
+                      <a href="/{{post.slug}}">{{post.title|highlight_yellow:searched}}</a>
+                      <small>by</small> 
+                      <span style="font-size: 18px;"><a class="user" href="#" hx-get="/account/user_profile/{{post.author.id}}/" hx-target="#dialog">{{post.author}}</a></span>
+                      <span style="font-size: 12px;">{{post.dateTime}}</span>
+                </h5> 
+              </div>
+              <div class="card-body">
+                <h7 class="card-text">{{post.content|highlight_yellow:searched|safe}}</h7>  
+
+                {% if user.is_authenticated %} {% if user.id == post.author.id %} <a class="font-weight-bold user" href="#" hx-get="{% url 'MyBlog:update_post' post.slug %}" hx-target="#dialog">(Modify)</a> {% endif %} {% endif %} 
+                {% if user.id != post.author.id %} <a href="#" class="font-weight-bold user" hx-get="{% url 'MyBlog:reply_post' post.id %}" hx-target="#dialog">(Quote)</a>{% endif %}
+                      
+                <!-- Like/Unlike post-->
+                | {% with total_likes=post.users_like.count users_like=post.users_like.all %}
+                      <span class="count">
+                            <span class="total">{{ total_likes }}</span> 
+                            like{{ total_likes|pluralize }}
+                      </span>
+                      {% if user.is_authenticated %}
+                            <a class="font-weight-bold user" href="#" data-id="{{ post.id }}" data-action="{% if request.user in users_like %}un{% endif %}like" class="like button">
+                                  {% if request.user not in users_like %} Like {% else %} Unlike {% endif %}
+                            </a>
+                      {% endif %}
+                {% endwith %}
+                <!-- end -->
+                | <a class="font-weight-bold user" href="#" hx-get="{% url 'MyBlog:post_share' post.id %}" hx-target="#dialog">Email</a>
+                | {% post_to_facebook object_or_url "Facebook" %}
+                | {% post_to_telegram object_or_url "Telegram" %}
+                | {% post_to_twitter object_or_url "Twitter" %}
+                | {% post_to_whatsapp object_or_url "Whatsapp" %}
+                
+                {% if post.image1 %}<div class="mb-1 mt-1"><img src="/media/{{post.image1}}" class="img-fluid mb-1"></div>{% endif %}
+                {% if post.image2 %}<div class="mb-1"><img src="/media/{{post.image2}}" class="img-fluid mb-1"></div>{% endif %}
+                {% if post.image3 %}<div class="mb-1"><img src="/media/{{post.image3}}" class="img-fluid mb-1"></div>{% endif %}
+                {% if post.image4 %}<div class="mb-1"><img src="/media/{{post.image4}}" class="img-fluid"></div>{% endif %}
+              </div>   
+            </div>
+      {% endfor %}
+    </div>
+    <div class="container">
+        <div class="card mt-3 text-center shadow">  
+            <div class="card-body">
+                <b>Search further</b> <a href=https://www.google.com.ng//search?q=site%3Aacrossglobe.com+{{searched}}><b>by clicking here</b> to try <b>Google Search!</b></a>
+            </div>
         </div>
     </div>
   {% else %}
-    <h1>You forgot to search</h1>
+    <h2 class="text-center">No search keyword, try again</h2>
   {% endif %}
+
+  {% if posts.has_other_pages %}
+    <nav aria-label="Page navigation">
+        <ul class="pagination justify-content-center">
+            {% if posts.has_previous %}
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ posts.previous_page_number }}">Previous</a>
+                </li>
+            {% else %}
+                <li class="page-link disabled" aria-disabled="true"><span>Previous</span></li>
+            {% endif %}
+            {% for i in posts.paginator.page_range %}
+                {% if posts.number == i %}
+                    <li class="page-item active">
+                        <a class="page-link">{{ i }}</a>
+                    </li>
+                {% else %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ i }}">{{ i }}</a>
+                    </li>
+                {% endif %}
+            {% endfor %}
+            {% if posts.has_next %}
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ posts.next_page_number }}">Next</a>
+                </li>
+            {% else %}
+                <li class="page-link disabled"><span>Next</span></li>
+            {% endif %}
+        </ul>
+    </nav>
+  {% endif %}
+
+  {% comment %} <div class="vertipics mt-2 mb-2 text-center">
+    <a href="#" hx-get="{% url 'MyBlog:adverts' %}" hx-target="#dialog" rel=sponsored><img src="https://www.nairaland.com/vertipics/6ez6otwqpwazgmvtld26kw3q2roijgou.png"></a>
+    <a href="#" hx-get="{% url 'MyBlog:adverts' %}" hx-target="#dialog" rel=sponsored><img src="https://www.nairaland.com/vertipics/iqax0ww60vcft2zqxgm9ocus2dq86ae0.jpg"></a>
+    <a href="#" hx-get="{% url 'MyBlog:adverts' %}" hx-target="#dialog" rel=sponsored><img src="https://www.nairaland.com/vertipics/1cqm2xehafkcin1q0te5z27n9tz69oy6.jpg"></a>
+  </div> {% endcomment %}
+
+  <div id="down" class="mt-2 mb-2 text-center">
+    <a href="#up"><b>(Go Up)</b></a>
+  </div>
+
 {% endblock %}

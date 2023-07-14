@@ -7,106 +7,110 @@
 
 {% block body %}
     <div class="modal-content">
-        <div class="modal-header">
-            <h5><a href="#">{{ user }} Profile</a></h5>
+        <div class="modal-header text-center">
+            <h3>{{ user }} Profile</h3>
         </div>
         <div class="modal-body" style="height: 80vh; overflow-y: auto;">
-            <div class="row">
-                <div class="col-sm-4">
+            <div class="row col-sm-12 shadow p-3 mb-2 bg-body rounded">
+                <div class="col-sm-3">
                     <div class="profile-img">
                         {% if user.profile.image %}
-                        <img src="{{user.profile.image.url}}" alt="" width="310px" height="270px">
+                            <img src="{{user.profile.image.url}}" alt="" class="img-fluid">
+                        {% else %}
+                            <img src="" src="../media/profile_pics/user_icon_400x472.png" alt="" class="img-fluid">
                         {% endif %}
                     </div>
+                    <center><button type="button" href="#" hx-get="{% url "edit_profile" %}" hx-target="#dialog" class="btn btn-primary mt-2">Edit Profile</button></center>
                 </div>
-                <div class="col-sm-8">
-                    
-                        <div class="row">
-                            <div class="col-md-6">
-                                <label>Username:</label>
-                            </div>
-                            <div class="col-md-6">
-                                <p>{{user}}</p>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col-md-6">
-                                <label>Full Name:</label>
-                            </div>
-                            <div class="col-md-6">
-                                <p>{{user.get_full_name}}</p>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col-md-6">
-                                <label>Email:</label>
-                            </div>
-                            <div class="col-md-6">
-                                <p>{{user.email}}</p>
-                            </div>
-                        </div>
-                        {% if user.profile.phone_no %}
-                        <div class="row">
-                            <div class="col-md-6">
-                                <label>Phone Number:</label>
-                            </div>
-                            <div class="col-md-6">
-                                <p>{{user.profile.phone_no}}</p>
-                            </div>
-                        </div>
-                        {% endif %}
-                        {% if user.profile.bio %}
-                        <div class="row">
-                            <div class="col-md-6">
-                                <label>Bio:</label>
-                            </div>
-                            <div class="col-md-6">
-                                <p>{{user.profile.bio}}</p>
-                            </div>
-                        </div>
-                        {% endif %}
-                        {% if user.profile.linkedin %}
-                        <div class="row">
-                            <div class="col-md-6">
-                                <label>Linkedin:</label>
-                            </div>
-                            <div class="col-md-6">
-                                <p><a href="{{user.profile.linkedin}}">{{user.profile.linkedin}}</a></p>
-                            </div>
-                        </div>
-                        {% endif %}
-                        {% if user.profile.instagram %}
-                        <div class="row">
-                            <div class="col-md-6">
-                                <label>Instagram:</label>
-                            </div>
-                            <div class="col-md-6">
-                                <p><a href="{{user.profile.instagram}}">{{user.profile.instagram}}</a></p>
-                            </div>
-                        </div>
-                        {% endif %}
-                        {% if user.profile.facebook %}
-                        <div class="row">
-                            <div class="col-md-6">
-                                <label>Facebook:</label>
-                            </div>
-                            <div class="col-md-6">
-                                <p><a href="{{user.profile.facebook}}">{{user.profile.facebook}}</a></p>
-                            </div>
-                        </div>
-                        {% endif %}
-                    
-                    <a href="#" hx-get="{% url "edit_profile" %}" class="btn btn-primary" hx-target="#dialog">Edit Profile</a>
+                <div class="col-sm-9">
+                    <table>
+                        <tr>
+                            <td><b>Username:</b></td>
+                            <td>{{user}}</td>
+                        </tr>
+                        <tr>
+                            <td><b>Full Name:</b></td>
+                            <td>{{user.get_full_name}}</td>
+                        </tr>
+                        <tr>
+                            <td><b>Email:</b></td>
+                            <td>{{user.email}}</td>
+                        </tr>
+                        <tr>
+                            <td><b>Phone Number:</b></td>
+                            <td>{{user.profile.phone_no}}</td>
+                        </tr>
+                        <tr>
+                            <td><b>Bio:</b></td>
+                            <td>{{user.profile.bio}}</td>
+                        </tr>
+                        <tr>
+                            <td><b>Linkedin:</b></td>
+                            <td><a href="{{user.profile.linkedin}}">{{user.profile.linkedin}}</a></td>
+                        </tr>
+                        <tr>
+                            <td><b>Instagram:</b></td>
+                            <td><a href="{{user.profile.instagram}}">{{user.profile.instagram}}</a></td>
+                        </tr>
+                        <tr>
+                            <td><b>Facebook:</b></td>
+                            <td><a href="{{user.profile.facebook}}">{{user.profile.facebook}}</a></td>
+                        </tr>
+                    </table>
                 </div>
             </div>
-            <hr>
-            <h6>My Post Lists</h6>
-            {% for p in post %}
-            <div class="col-sm-12 row">
-                <div class="col-sm-8"><a href="/blog/{{p.category.slug}}/{{p.category.id}}">{{ p.category.category_title }}</a> <b>/</b> <a href="blog/{{p.slug}}">{{p.title}}</a></div>
-                <div class="col-sm-4">{{ p.dateTime }}</div>
+            
+            <div class="col-sm-12 shadow p-3 mb-2 bg-body rounded text-center" style="height: 60vh; overflow-y: auto;">
+                <h5>My Posts</h5>
+                <hr>
+                {% for p in post %}
+                    <a href="/{{p.category.slug}}/{{p.category.id}}">{{ p.category.category_title }}</a> <b>/</b> <a href="/{{p.slug}}">{{p.title}}</a><br>
+                    by {{ user.username }} on ({{ p.dateTime }})
+                    <center>{% if not forloop.last %} <hr style="width:80%"> {% endif %}</center>
+                {% endfor%} 
             </div>
-            {% endfor%}
+
+            <!--Paging here-->
+            {% if post.has_other_pages %}
+                <nav aria-label="Page navigation">
+                    <ul class="pagination justify-content-center">
+                        {% if post.has_previous %}
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ post.previous_page_number }}">Previous</a>
+                            </li>
+                        {% else %}
+                            <li class="page-link disabled" aria-disabled="true"><span>Previous</span></li>
+                        {% endif %}
+                        {% for i in post.paginator.page_range %}
+                            {% if post.number == i %}
+                                <li class="page-item active">
+                                    <a class="page-link">{{ i }}</a>
+                                </li>
+                            {% else %}
+                                <li class="page-item">
+                                    <a class="page-link" href="?page={{ i }}">{{ i }}</a>
+                                </li>
+                            {% endif %}
+                        {% endfor %}
+                        {% if post.has_next %}
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ post.next_page_number }}">Next</a>
+                            </li>
+                        {% else %}
+                            <li class="page-link disabled"><span>Next</span></li>
+                        {% endif %}
+                    </ul>
+                </nav>
+            {% endif %}
+
+            <div class="col-sm-12 shadow p-3 mb-2 bg-body rounded text-center">
+                <span class="mb-2"><a href="#">Posts I've Liked</a> | <a href="#">Posts I've shared </a> | <a href="#">My Quotes & Mentions</a> </span><br>
+                <span class="mb-2"><b>Time registered:</b> {{user.date_joined}}</span><br>
+                <span class="mb-2"><b>Last seen:</b> {{user.last_login}}</span><br>
+                <span class="mb-2"><a href="#">View My posts ()</a> | <a href="#">View My topics () </a></span><br>
+                <span class="mb-2"><b>Section Most Active In:</b> </span><br>
+            </div>
+
         </div>
         <div class="modal-footer">
             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</a>

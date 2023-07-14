@@ -21,13 +21,19 @@ class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, blank=True, null=True)
     date_of_birth = models.DateField(blank=True, null=True)
     image = models.ImageField(upload_to='profile_pics/%Y/%m/%d/', blank=True, null=True)
-    name = models.TextField(blank=True, null=True)
+    #name = models.TextField(blank=True, null=True)
     bio = models.TextField(_('bio'), blank=True, null=True)
     phone_no = PhoneField(_('phone_no'), blank=True, null=True)
     facebook = models.CharField(_('facebook'), max_length=300, blank=True, null=True)
     instagram = models.CharField(_('instagram'), max_length=300, blank=True, null=True)
     linkedin = models.CharField(_('linkedin'), max_length=300, blank=True, null=True)
-
+    
+    GENDER_CHOICES = (
+        ('M', 'Male'),
+        ('F', 'Female'),
+    )
+    gender = models.CharField(max_length=1, blank=True, null=True, choices=GENDER_CHOICES)
+    
     def __str__(self):
         return f'Profile for user {self.user.username}'
         #return str(self.user)

@@ -3,6 +3,9 @@ import os
 
 from django.urls import reverse_lazy
 from django.utils.translation import gettext_lazy as _
+from django.contrib.messages import constants as messages
+
+gettext = lambda s: s
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -34,6 +37,7 @@ INSTALLED_APPS = [
     'social_django',
     'django_extensions',
     'myblog',
+    'shop.apps.ShopConfig',
     'django.contrib.humanize',
     'easy_thumbnails',
     'hitcount',
@@ -50,6 +54,9 @@ INSTALLED_APPS = [
     'verify_email.apps.VerifyEmailConfig',
     'phone_field',
     'django_social_share',
+    'ads',
+    'sekizai',
+    'payment.apps.PaymentConfig',
     #'herokuapp'
 ]
 
@@ -101,21 +108,6 @@ DATABASES = {
     }
 }
 
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'mssql',
-#         'NAME': 'MyBlog',
-#         # 'USER': '',
-#         # 'PASSWORD': 'password',
-#         # 'HOST': '192.168.2.17',
-#         # 'PORT': '',
-#         'OPTIONS': {
-#             #'driver': 'ODBC Driver 13 for SQL Server',
-#         },
-#     },
-# }  
-
-
 # Password validation
 # https://docs.djangoproject.com/en/3.1/ref/settings/#auth-password-validators
 
@@ -148,7 +140,7 @@ LOCALE_PATHS = (
     os.path.join(BASE_DIR, 'locale/'),
 )
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'Africa/Lagos'
 
 USE_I18N = True
 
@@ -181,19 +173,27 @@ CRISPY_TEMPLATE_PACK = 'bootstrap4'
 
 # Gmail SMTP Server
 # EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
-EMAIL_BACKEND = 'django.core.mail.backends.dummy.EmailBackend'
-# EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend" # In Production environment
-
+#EMAIL_BACKEND = 'django.core.mail.backends.dummy.EmailBackend'
+EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend" # In Production environment
 EMAIL_HOST = 'smtp.gmail.com'
-EMAIL_PORT = 587
-EMAIL_HOST_USER = 'bioscomsoft@gmail.com'
-EMAIL_HOST_PASSWORD = 'Euaggelisis@123'
+EMAIL_PORT = 587  #465
 EMAIL_USE_TLS = True
+EMAIL_HOST_USER = 'bioscomsoft@gmail.com'
+EMAIL_HOST_PASSWORD = 'qqboykvpqsffmnxs'
+#EMAIL_USE_SSL = True
 DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
 
-EXPIRE_AFTER = "5d" # Will expire after ten days from link generation
-#REQUEST_NEW_EMAIL_TEMPLATE = 'mytemplates/mycustomtemplate.html'  #To be investigated 
-VERIFICATION_SUCCESS_TEMPLATE = None
+#   Verify user email address  https://pypi.org/project/Django-Verify-Email/#step3     
+EXPIRE_AFTER = "5d" # Will expire after five days from link generation
+MAX_RETRIES = 10 
+HTML_MESSAGE_TEMPLATE = "account/partial_email_verification_message.html"
+VERIFICATION_SUCCESS_TEMPLATE = "account/partial_verification_successful.html"
+VERIFICATION_FAILED_TEMPLATE = "account/partial_email_verification_failed.html"
+REQUEST_NEW_EMAIL_TEMPLATE = 'account/partial_request_new_email.html'
+LINK_EXPIRED_TEMPLATE = 'account/partial_link_expired.html'
+NEW_EMAIL_SENT_TEMPLATE = 'account/partial_new_email_sent.html'
+SUBJECT = 'Email Verification Mail' # can be changed later
+#   end of user email address verification
 
 
 LOGIN_REDIRECT_URL = 'https://acrossglobe.com:8000/'
@@ -204,7 +204,7 @@ LOGOUT_URL = 'https://acrossglobe.com:8000/'
 # Social Authentication
 AUTHENTICATION_BACKENDS = [
     'django.contrib.auth.backends.ModelBackend',
-   #'account.authentication.EmailAuthBackend',
+    #'account.authentication.EmailAuthBackend',
     'social_core.backends.facebook.FacebookOAuth2', 
     'social_core.backends.google.GoogleOAuth2', 
     'social_core.backends.twitter.TwitterOAuth',
@@ -233,25 +233,15 @@ CKEDITOR_BASEPATH = "/static/ckeditor/ckeditor/"
 CKEDITOR_UPLOAD_PATH = "uploads/"
 #CKEDITOR_FILENAME_GENERATOR = 'utils.get_filename'
 
-# CKEDITOR_CONFIGS = {
-#     'awesome_ckeditor': {
-#         'toolbar': 'Basic',
-#     },
-# }
 
-# CKEDITOR_CONFIGS={
-#   'default': {
-#     'skin': 'office2013',
-#     'toolbar': 'Full',
-#     'height': 500,
-#     'width': '100%',
-#     'extraPlugins':','.join(
-#         [
-#             'codesnippet', 'widget', 'youtube', 'html5video',
-#         ]
-#     ),
-#   }
-# }
+MESSAGE_TAGS = {
+    messages.DEBUG: 'alert-info',
+    messages.INFO: 'alert-info',
+    messages.SUCCESS: 'alert-success',
+    messages.WARNING: 'alert-warning',
+    messages.ERROR: 'alert-danger',
+}
+
 
 CKEDITOR_CONFIGS = {
     'default': {
@@ -274,12 +264,15 @@ CKEDITOR_CONFIGS = {
             #{'name': 'about', 'items': ['About']},
         ],
         'toolbar': 'YourCustomToolbarConfig',  # put selected toolbar config here
-        # 'toolbarGroups': [{ 'name': 'document', 'groups': [ 'mode', 'document', 'doctools' ] }],
-         'height': 300,
-         'width': '100%',
-         'youtube_responsive':'true',
-         'filebrowserWindowHeight': 725,
-         'filebrowserWindowWidth': 940,
+        'height': 250,
+        'width': '100%',
+        'removePlugins':'resize',
+        'resize_enabled':'false',
+        'removePlugins':'elementspath',
+        'youtube_responsive':'true',
+        'filebrowserWindowHeight': 725,
+        'filebrowserWindowWidth': 940,
+        'allowedContent': True,
         # 'toolbarCanCollapse': True,
         # 'mathJaxLib': '//cdn.mathjax.org/mathjax/2.2-latest/MathJax.js?config=TeX-AMS_HTML',
         'tabSpaces': 4,
@@ -290,17 +283,89 @@ CKEDITOR_CONFIGS = {
             'autolink',
             'autoembed',
             'embedsemantic',
-            'autogrow',
             'youtube',
             'html5video',
-            # 'devtools',
+            #'devtools',
             'widget',
             'lineutils',
             'clipboard',
             'dialog',
             'dialogui',
-            'elementspath'
+            'mediaembed',
+            #'elementspath'
         ]),
     }
 }
 
+
+ADS_GOOGLE_ADSENSE_CLIENT = None  # 'ca-pub-xxxxxxxxxxxxxxxx'
+
+ADS_ZONES = {
+    'header': {
+        'name': gettext('Header'),
+        'ad_size': {
+            'xs': '720x150',
+            'sm': '800x90',
+            'md': '800x90',
+            'lg': '800x90',
+            'xl': '800x90'
+        },
+        'google_adsense_slot': None,  # 'xxxxxxxxx',
+        'google_adsense_format': None,  # 'auto'
+    },
+    'content': {
+        'name': gettext('Content'),
+        'ad_size': {
+            'xs': '720x150',
+            'sm': '800x90',
+            'md': '800x90',
+            'lg': '800x90',
+            'xl': '800x90'
+        },
+        'google_adsense_slot': None,  # 'xxxxxxxxx',
+        'google_adsense_format': None,  # 'auto'
+    },
+    'sidebar': {
+        'name': gettext('Sidebar'),
+        'ad_size': {
+            'xs': '720x150',
+            'sm': '800x90',
+            'md': '800x90',
+            'lg': '800x90',
+            'xl': '800x90'
+        }
+    }
+}
+
+ADS_DEFAULT_AD_SIZE = '720x150'
+
+ADS_DEVICES = (
+    ('xs', _('Extra small devices')),
+    ('sm', _('Small devices')),
+    ('md', _('Medium devices (Tablets)')),
+    ('lg', _('Large devices (Desktops)')),
+    ('xl', _('Extra large devices (Large Desktops)')),
+)
+
+ADS_VIEWPORTS = {
+    'xs': 'd-block img-fluid d-sm-none',
+    'sm': 'd-none img-fluid d-sm-block d-md-none',
+    'md': 'd-none img-fluid d-md-block d-lg-none',
+    'lg': 'd-none img-fluid d-lg-block d-xl-none',
+    'xl': 'd-none img-fluid d-xl-block',
+}
+
+
+# Braintree settings
+BRAINTREE_MERCHANT_ID = '7vybxjn8qbyqpyfk' # Merchant ID
+BRAINTREE_PUBLIC_KEY = 'wt3c8z3wv33hf8c6' # Public Key
+BRAINTREE_PRIVATE_KEY = '7c99947c2887b47a062c8f86fa9ba7c2' # Private key
+
+import braintree
+
+BRAINTREE_CONF = braintree.Configuration(
+    braintree.Environment.Sandbox,
+    BRAINTREE_MERCHANT_ID,
+    BRAINTREE_PUBLIC_KEY,
+    BRAINTREE_PRIVATE_KEY
+)

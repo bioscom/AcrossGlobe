@@ -7,78 +7,44 @@
 {% block homeactive %} active {% endblock homeactive %}
 
 {% block css %}
-  table { border-collapse: collapse; }
-  tr { display: block; float: left; }
-  th, td { display: block; border: 1px; }
+
 {% endblock %}
+
 {% block body %}
+  <div class="text-center">
+    <h2 class="card-title">{{category.category_title}} - Across Globe</h2>
+    <p><b font-size:18px><a href="/">Across globe</a> / <a href="/cat/{{cattype.id}}">{{cattype.type}}</a> / <a href="/{{category.slug}}/{{category.id}}">{{category.category_title}}</a></b></p>
+    <div class="container">
+      {% for sub in subcategories %}
+          {% if sub.category_id == category.id %}
+            <div class="card-header">
+              <a href="/en/sub/{{sub.slug}}/"><b>{{sub.title}}</b></a> - {{sub.sub_title}}
+            </div>
+          {% endif %}
+      {% endfor %}
+    </div>
+    {% comment %} <p class="mt-3"><a href="/en/{{category.slug}}/{{category.id}}">{{category.category_title}}</a>: <a>{{category.sub_title}} <b>Ad Rate:{{category.adrate|floatformat:2|intcomma}}</b>/week ({{category.discount}}% premium) </a></p> {% endcomment %}
+  </div>
 
-<div class="text-center">
-  <h2 class="card-title">{{category.category_title}} - Across Globe</h2>
-  <p><b font-size:18px><a href="/">Across globe</a> / <a href="/{{category.slug}}/{{category.id}}">{{category.category_title}}</a></b></p>
-  {% for sub in subcategories %}
-      {% if sub.category_id == category.id %}
-        <div class="card-header" style="background-color: #deeff5;">
-          <a href="/en/sub/{{sub.slug}}/"><b>{{sub.title}}</b></a> - {{sub.sub_title}}
-        </div>
-      {% endif %}
-  {% endfor %}
-  <p class="mt-3"><a href="/en/{{category.slug}}/{{category.id}}">{{category.category_title}}</a>: <a>{{category.sub_title}} <b>Ad Rate:{{category.adrate|floatformat:2|intcomma}}</b>/week ({{category.discount}}% premium) </a></p>
-</div>
+  {% comment %} <div class="vertipics mt-2 mb-2 text-center">
+    <a href="#" hx-get="{% url 'MyBlog:adverts' %}" hx-target="#dialog" rel=sponsored><img src="https://www.nairaland.com/vertipics/6ez6otwqpwazgmvtld26kw3q2roijgou.png"></a>
+    <a href="#" hx-get="{% url 'MyBlog:adverts' %}" hx-target="#dialog" rel=sponsored><img src="https://www.nairaland.com/vertipics/iqax0ww60vcft2zqxgm9ocus2dq86ae0.jpg"></a>
+    <a href="#" hx-get="{% url 'MyBlog:adverts' %}" hx-target="#dialog" rel=sponsored><img src="https://www.nairaland.com/vertipics/1cqm2xehafkcin1q0te5z27n9tz69oy6.jpg"></a>
+  </div> {% endcomment %}
 
+  <div class="text-center mt-2 mb-2">
+    <a href="#" hx-get="{% url 'MyBlog:add_post' category.id %}" hx-target="#dialog">(Create New Topic)</a>
+    {% comment %} <a href="#" hx-get="{% url 'MyBlog:adverts' %}" hx-target="#dialog"> (Advertise in {{category.category_title}})</a> {% endcomment %}
+    <a href="#" hx-get="{% url 'MyBlog:mail_moderator' category.id %}" hx-target="#dialog">(Mail Moderators)</a>
+  </div>
 
+  {% include "blog/blog_list_ajax.html" %}
 
-<div class="vertipics mt-2 mb-2 text-center">
-  <a href="/hopto/home/17156" rel=sponsored><img src="https://www.nairaland.com/vertipics/6ez6otwqpwazgmvtld26kw3q2roijgou.png"></a>
-  <a href="/hopto/home/17074" rel=sponsored><img src="https://www.nairaland.com/vertipics/iqax0ww60vcft2zqxgm9ocus2dq86ae0.jpg"></a>
-  <a href="/hopto/home/15920" rel=sponsored><img src="https://www.nairaland.com/vertipics/1cqm2xehafkcin1q0te5z27n9tz69oy6.jpg"></a>
-</div>
-
-<div class="text-center">
-  <a href="#" hx-get="{% url 'MyBlog:add_newtopic' category.id %}" hx-target="#dialog">(Create New Topic)</a>
-  {% comment %} <a href="{% url 'MyBlog:adverts' category.slug %}"> (Advertise in {{category.category_title}})</a>  {% endcomment %}
-  <a href="#" hx-get="{% url 'MyBlog:ad_adverts' category.slug %}" hx-target="#dialog"> (Advertise in {{category.category_title}})</a>
-  <a href="#" hx-get="{% url 'MyBlog:mail_moderator' category.id %}" hx-target="#dialog">(Mail Moderators)</a>
-  
-</div>
-
-{% include "blog/blog_category_ajax.html" %}
-
-<div class="vertipics mt-2 mb-2 text-center">
-  <a href="/hopto/home/17156" rel=sponsored><img src="https://www.nairaland.com/vertipics/6ez6otwqpwazgmvtld26kw3q2roijgou.png"></a>
-  <a href="/hopto/home/17074" rel=sponsored><img src="https://www.nairaland.com/vertipics/iqax0ww60vcft2zqxgm9ocus2dq86ae0.jpg"></a>
-  <a href="/hopto/home/15920" rel=sponsored><img src="https://www.nairaland.com/vertipics/1cqm2xehafkcin1q0te5z27n9tz69oy6.jpg"></a>
-</div>
-
-       
-{% comment %} <nav aria-label="Page navigation conatiner"></nav>
-  <ul class="pagination justify-content-center">
-    {% if posts.has_previous %}
-        <a href="?page={{ 1 }}">◀️◀️</a>
-        <a href="?page={{ posts.previous_page_number }}">◀️</a>
-    {% endif%}
-
-    <a>{{posts.number}} of {{posts.paginator.num_pages}}</a>
-
-    {% if posts.has_next %}
-        <a href="?page={{ posts.next_page_number }}">▶️</a>
-        <a href="?page={{ posts.paginator.num_pages }}">▶️▶️</a>
-    {% endif%}
-  </ul>
-</nav> {% endcomment %}
-    {% comment %} <hr>
-
-    {% for page_number in page_obj.paginator.page_range %}
-        <a
-            href="{% url 'terms-by-page' page_number %}"
-            class="{% if page_number == page_obj.number %}current{% endif %}"
-        >
-            {{page_number}}
-        </a>
-    {% endfor %} {% endcomment %}
-
-
-
+  {% comment %} <div class="vertipics mt-2 mb-2 text-center">
+    <a href="#" hx-get="{% url 'MyBlog:adverts' %}" hx-target="#dialog" rel=sponsored><img src="https://www.nairaland.com/vertipics/6ez6otwqpwazgmvtld26kw3q2roijgou.png"></a>
+    <a href="#" hx-get="{% url 'MyBlog:adverts' %}" hx-target="#dialog" rel=sponsored><img src="https://www.nairaland.com/vertipics/iqax0ww60vcft2zqxgm9ocus2dq86ae0.jpg"></a>
+    <a href="#" hx-get="{% url 'MyBlog:adverts' %}" hx-target="#dialog" rel=sponsored><img src="https://www.nairaland.com/vertipics/1cqm2xehafkcin1q0te5z27n9tz69oy6.jpg"></a>
+  </div> {% endcomment %}
 {% endblock %}
 
 
@@ -97,17 +63,5 @@
 <!--https://realpython.com/django-pagination/-->
 
 {% block js %}
-<style>
-    #loading {
-        transition: opacity 1s ease-out;
-        opacity: 1;
-    }
-</style>
-<script>
-  
 
-{% comment %} <div id="loading">Loading...</div> {% endcomment %}
-
-    
-</script>
 {% endblock %}

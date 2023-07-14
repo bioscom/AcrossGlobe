@@ -1,0 +1,55 @@
+{% load widget_tweaks %}
+{% load crispy_forms_tags %}
+
+{% block css %}
+{% endblock %}
+
+{% block body %}
+  {% with WIDGET_ERROR_CLASS='is-invalid' %}
+    <form action="/en/{{post.id}}/update_comment/" enctype="multipart/form-data" class="modal-content" method="POST">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5><a href="/{{post.slug}}/">{{post.title}} - {{category.category_title}}</a></h5>
+          </div>
+          <div class="modal-body">
+            {% csrf_token %}
+            {{ form.media }}
+            
+            <div class="row col-sm-12">
+                <div class="mb-3">
+                  {{form.title.as_hidden}}
+                </div>
+
+                <div class="mb-3">
+                    <label for="{{ form.content.id_for_label }}" class="form-label">Message</label>
+                    {% render_field form.content class="form-control" placeholder="" %}
+                    <div class="invalid-feedback">{{ form.content.errors|first }}</div>
+                </div>
+
+                <table class="table">
+                  <tr><th col-span="4">Attachments: (maximum size: 4MB for pictures and 250kB for other files)</th></tr>
+                  <tb>
+                      <tr><td>{{ form.image1 }}</td></tr>
+                      <tr><td>{{ form.image2 }}</td></tr>
+                      <tr><td>{{ form.image3 }}</td></tr>
+                      <tr><td>{{ form.image4 }}</td></tr>
+                  </tb>
+                </table>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-danger" hx-post="{% url 'MyBlog:delete_post' post.slug %}" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Note: Post can no longer be deleted after 1 week.">Delete Post</button>
+            <span class="flex-grow-1"></span>
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</a>
+            <button type="submit" class="submit-btn btn btn-primary">Update</button>
+          </div>
+        </div>
+    </form>
+    {% endwith %}
+
+{% endblock %}
+
+
+{% block js %}
+
+{% endblock %}
