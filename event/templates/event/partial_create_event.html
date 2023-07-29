@@ -1,0 +1,131 @@
+{% load widget_tweaks %}
+{% load crispy_forms_tags %}
+
+{% block css %}
+
+{% endblock %}
+
+{% block body %}
+    {% with WIDGET_ERROR_CLASS='is-invalid' %}
+        <form action="{{request.path}}" enctype="multipart/form-data" method="POST"> 
+            <div class="modal-content">
+                <div class="modal-header text-center">
+                    <div class="text-center col-sm-11">
+                        <h5>Create event</h5>
+                    </div>
+                    <div class="col-sm-1">
+                        <button type="button" class="rounded-circle" data-bs-dismiss="modal">X</button>
+                    </div>
+                </div>
+                <div class="modal-body" style="height: 65vh; overflow-y: auto;">
+                    {% csrf_token %}
+                    
+                    <div class="mb-4 row col-sm-12" style="background-color: rgba(0,0,255,.1);">
+                        <img id="display-img" alt="" height="160" width="100%"/>
+                        <div class="col-sm-4">
+                            Add Cover Photo
+                        </div>
+                        <div class="col-sm-8">
+                            {% render_field form.image class="form-control" id="img-input" %}
+                        </div>
+                    </div>
+
+                    <div class="col-sm-12">
+                        <div class="row col-sm-12 mb-3">
+                            <div class="col-sm-2">
+                                {% if user.profile.image %}
+                                    <img src="{{user.profile.image.url}}" alt="" class="rounded-circle" height="45" loading="lazy">
+                                {% else %}
+                                    <img src="" src="../media/profile_pics/user_icon_400x472.png" alt="" class="rounded-circle" height="45" loading="lazy">
+                                {% endif %}
+                            </div>
+                            <div class="col-sm-9">
+                                <b>{{request.user.get_full_name}}</b><br>
+                                <small>Host - Your Profile</small>
+                            </div>
+                        </div>
+
+                        <div class="mb-3 col-md-12">
+                            Event Category:
+                            {% render_field form.category class="form-control" placeholder="Event Category" %}
+                            <div class="invalid-feedback">{{ form.category.errors|first }}</div>
+                        </div>
+
+                        <div class="mb-3 col-md-12">
+                            {% render_field form.eventname class="form-control" placeholder="Event name" %}
+                            <div class="invalid-feedback">{{ form.eventname.errors|first }}</div>
+                        </div>
+
+                        <div class="row col-md-12 mb-3">
+                            <div class="col-md-6">
+                                Start Date:
+                                {% render_field form.startdate class="form-control" placeholder="Start Date" %}
+                                <div class="invalid-feedback">{{ form.startdate.errors|first }}</div>
+                            </div>
+                            <div class="col-md-6">
+                                Start Time:
+                                {% render_field form.starttime class="form-control" placeholder="Start Time" %}
+                                <div class="invalid-feedback">{{ form.starttime.errors|first }}</div>
+                            </div>
+                        </div>
+
+                        <div class="row col-md-12 mb-3">
+                            <div class="col-md-6">
+                                End Date:
+                                {% render_field form.enddate class="form-control" placeholder="End Date" %}
+                                <div class="invalid-feedback">{{ form.enddate.errors|first }}</div>
+                            </div>
+                            <div class="col-md-6">
+                                End Time:
+                                {% render_field form.endtime class="form-control" placeholder="End Time" %}
+                                <div class="invalid-feedback">{{ form.endtime.errors|first }}</div>
+                            </div>
+                        </div>
+
+                        <div id="eventtype" class="mb-3 col-md-12">
+                            {% render_field form.eventtype class="form-control" placeholder="Is it in person or virtual?" %}
+                            <div class="invalid-feedback">{{ form.eventtype.errors|first }}</div>
+                        </div>
+
+                        <div id="virtual" class="mb-3 col-md-12" hidden="hidden">
+                            {% comment %} {% render_field form.eventtype class="form-control" placeholder="Is it in person or virtual?" %}
+                            <div class="invalid-feedback">{{ form.eventtype.errors|first }}</div> {% endcomment %}
+                        </div>
+
+                        <div id="location" class="mb-3 col-md-12" hidden="hidden">
+                            {% comment %} {% render_field form.eventtype class="form-control" placeholder="Is it in person or virtual?" %}
+                            <div class="invalid-feedback">{{ form.eventtype.errors|first }}</div> {% endcomment %}
+                        </div>
+
+                        <div class="mb-3 col-md-12">
+                            {% render_field form.details class="form-control" placeholder="What are the event details?" %}
+                            <div class="invalid-feedback">{{ form.details.errors|first }}</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-primary">Submit</button>
+                </div>
+            </div> 
+        </form> 
+    {% endwith %}
+{% endblock %}
+
+<script>
+    const imgInput = document.querySelector("#img-input")
+    const displayImg = document.querySelector("#display-img")
+    imgInput.addEventListener('change', (event)=>{
+        const imgObject = event.target.files[0]
+        displayImg.src = URL.createObjectURL(imgObject)
+    })
+
+    const virtual = document.querySelector("#virtual")
+    const location = document.querySelector("#location")
+    const eventype = document.querySelector("#id_eventtype")
+    eventype.addEventListener('change', (event)=>{
+        virtual.setAttribute('class', 'hidden')
+        location.setAttribute('class', 'visible')
+    })
+
+    
+</script>
