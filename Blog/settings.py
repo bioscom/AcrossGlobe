@@ -1,6 +1,5 @@
 from pathlib import Path
 import os
-
 from django.urls import reverse_lazy
 from django.utils.translation import gettext_lazy as _
 from django.contrib.messages import constants as messages
@@ -16,6 +15,8 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = 'ejcw-d5t67dgrz$_evfgd#kz7y_ku70urb5bnncn2^3*&o0l&@'
+
+#GOOGLE_MAP_API = 'AIzaSyDO4jT08TFK1CUjXdryY0h31wUWII-A4pw'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -34,8 +35,13 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django.contrib.gis',
     'social_django',
     'django_extensions',
+    
+    'rest_framework',
+    'corsheaders',
+    
     'myblog',
     'shop.apps.ShopConfig',
     'django.contrib.humanize',
@@ -57,6 +63,8 @@ INSTALLED_APPS = [
     'ads',
     'sekizai',
     'payment.apps.PaymentConfig',
+    'event',
+    'addlocation',
     #'herokuapp'
 ]
 
@@ -64,6 +72,8 @@ MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.locale.LocaleMiddleware',
+    
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
@@ -75,10 +85,12 @@ MIDDLEWARE = [
 
 ROOT_URLCONF = 'Blog.urls'
 
+CORS_ORIGIN_ALLOW_ALL = True
+
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': ["MyBlog/templates", "account/templates"],
+        'DIRS': ["MyBlog/templates", "account/templates", "event/templates"],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -99,7 +111,8 @@ WSGI_APPLICATION = 'Blog.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        #'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'ENGINE': 'django.contrib.gis.db.backends.postgis',
         'NAME': 'acrossglobe', 
         'USER': 'postgres',
         'PASSWORD': 'Euaggelisis123',
@@ -169,11 +182,12 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap4"
 CRISPY_TEMPLATE_PACK = 'bootstrap4'
 
-
+# GeoDjango connection
+GDAL_LIBRARY_PATH = r'C:\OSGeo4W\bin\gdal307'
 
 # Gmail SMTP Server
 # EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
-#EMAIL_BACKEND = 'django.core.mail.backends.dummy.EmailBackend'
+# EMAIL_BACKEND = 'django.core.mail.backends.dummy.EmailBackend'
 EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend" # In Production environment
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587  #465

@@ -22,6 +22,8 @@ urlpatterns = i18n_patterns(
     path('verification/', include('verify_email.urls')),
     path('ads/', include('ads.urls')),
     path(_('shop/'), include('shop.urls')),
+    path(_('event/'), include('event.urls')),
+    path(_('addlocation/'), include('addlocation.urls')),
 ) 
 
 if settings.DEBUG:

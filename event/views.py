@@ -1,4 +1,5 @@
 from django.shortcuts import render
+import requests
 import json
 from django.db.models import Count
 from django.http import HttpResponseRedirect
@@ -30,6 +31,16 @@ from hitcount.views import HitCountMixin
 from django.core.files.uploadedfile import SimpleUploadedFile
 from itertools import chain
 import datetime        #from datetime  Import datetime
+import folium
+from folium import plugins
+
+from geopy.geocoders import ArcGIS, Nominatim
+import geopy
+
+from .models import Place
+
+
+
 
 # Create your views here.
 
@@ -66,27 +77,109 @@ def event_list_by_category(request, cat_id):
         mevents = paginator.page(paginator.num_pages)
     return render(request, "event/index.html", {'events': mevents, 'categories': categories})
     
+    
+# @login_required(login_url='/account/login')
+# def add_event(request):
+#     category = Categories.objects.all()
+    
+#     if request.method == "POST":
+#         form = EventForm(data=request.POST, files=request.FILES)
+#         if form.is_valid():    
+#             e = form.save(commit=False)
+#             e.author = request.user
+#             e.save()
+#             return redirect('event/events')
+#     else:
+#         form = EventForm()
+        
+#         ip = requests.get('https://api.ipify.org?format=json')
+#         ip_data = json.loads(ip.text)
+#         res = requests.get('http://ip-api.com/json/' + ip_data['ip'])
+#         location_data = json.loads(res.text)
+        
+#         map = folium.Map(location=[location_data['lat'], location_data['lon']], zoom_start=8)
+#         coordinates = (location_data['lat'], location_data['lon'])
+#         icon=folium.Icon(color='red')
+#         folium.Marker(coordinates, icon=icon).add_to(map)
+#         plugins.Geocoder().add_to(map)
+        
+#     return render(request, "event/partial_create_event.html", {'form': form, 'category':category, 'map': map._repr_html_()})
+
 @login_required(login_url='/account/login')
 def add_event(request):
-    try:
-        #category = Categories.objects.get(id=cat_id)  
-        if request.method == "POST":
-            form = EventForm(data=request.POST, files=request.FILES)
-            if form.is_valid():
-                e = form.save(commit=False)
-                e.author = request.user
-                e.save()
-                return redirect('event/events')
-        else:
-            form = EventForm()
-    except:
-        pass
+    if request.method == 'POST':
+        form = NewEntryForm(request.POST, files=request.FILES)
+        if form.is_valid():
+            new_events = events(eventname = request.POST['eventname'], location = request.POST['location'], author = request.user,
+                                image = request.POST['image'], startdate = request.POST['startdate'], starttime = request.POST['starttime'],
+                                enddate = request.POST['enddate'], endtime = request.POST['endtime'],
+                                details = request.POST['details'], eventtype = request.POST['eventtype'],
+                                category = request.POST['category'], eventvenue = request.POST['eventvenue'],
+                                virtual_type = request.POST['virtual_type'],
+            )
+            new_events.save()
+            return redirect("event/events/")
+    else:
+        form = NewEntryForm()
     return render(request, "event/partial_create_event.html", {'form': form})
 
 
-def event_detail(request, id):
-    mevent = events.objects.filter(id=id).first()
-    return render(request, 'event/detail.html', {'event': mevent})
+def event_detail(request, slug):
+    categories = Categories.objects.all()
+    mevent = events.objects.get(slug=slug)
+    
+    mday = mevent.startdate.strftime("%d").upper()
+    eventdate = mevent.startdate.strftime("%A, %B %d,  %Y").upper()
+    
+    m = folium.Map(location=[mevent.latitudes, mevent.longitudes], zoom_start=9)
+    # add a marker to the map
+    coordinates = (mevent.latitudes, mevent.longitudes)
+    icon=folium.Icon(color='red')
+    folium.Marker(coordinates, popup=mevent.eventname, icon=icon).add_to(m)
+    return render(request, 'event/detail.html', {'event': mevent, 'categories': categories, 'eventdate':eventdate, 'date':mday, 'map':m._repr_html_()})
+
+
+def popup_map(request, slug):
+    mevent = events.objects.get(slug=slug)
+    m = folium.Map(location=[mevent.latitudes, mevent.longitudes], zoom_start=9)
+    
+    # add a marker to the map
+    coordinates = (mevent.latitudes, mevent.longitudes)
+    icon=folium.Icon(color='red')
+    folium.Marker(coordinates, popup=mevent.eventname, icon=icon).add_to(m)
+    
+    return render(request, 'event/partial_popup_map.html', {'event': mevent, 'map':m._repr_html_()})
+    
+
+# Create your views here.
+def index(request):
+    ip = requests.get('https://api.ipify.org?format=json')
+    ip_data = json.loads(ip.text)
+    res = requests.get('http://ip-api.com/json/'+ ip_data['ip'])
+    location_data_one = res.text
+    location_data = json.loads(location_data_one)
+    return render(request, 'index.html', {'data': location_data})
 
         
 
+@ajax_required
+@login_required(login_url='/account/login')
+@require_POST
+def post_like(request):
+    evt_id = request.POST.get('id')
+    action = request.POST.get('action')
+    if evt_id and action:
+        try:
+            evt = events.objects.get(id=evt_id)
+            if action == 'like':
+                evt.users_like.add(request.user)
+            else:
+                evt.users_like.remove(request.user)
+            return JsonResponse({'status': 'ok'})
+        except:
+            pass
+    return JsonResponse({'status': 'ko'})
+
+
+
+    

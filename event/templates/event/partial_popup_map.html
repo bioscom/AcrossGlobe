@@ -1,0 +1,20 @@
+{% load widget_tweaks %}
+{% load crispy_forms_tags %}
+
+{% block css %}
+
+{% endblock %}
+
+{% block body %}
+
+    <div class="modal-content">
+        <div class="modal-header">
+            <h5>{{event.eventvenue}}</h5>  
+            <button type="button" class="close rounded-circle" data-bs-dismiss="modal" aria-hidden="true">×</button>
+        </div>
+        <div class="modal-body">
+            {{map|safe}}
+        </div>
+    </div>
+    
+{% endblock %}

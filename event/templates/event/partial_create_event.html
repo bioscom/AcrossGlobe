@@ -1,6 +1,10 @@
 {% load widget_tweaks %}
 {% load crispy_forms_tags %}
 
+{% comment %} {% load leaflet_tags %}
+{% leaflet_css %}
+{% leaflet_js %} {% endcomment %}
+
 {% block css %}
 
 {% endblock %}
@@ -14,49 +18,53 @@
                         <h5>Create event</h5>
                     </div>
                     <div class="col-sm-1">
-                        <button type="button" class="rounded-circle" data-bs-dismiss="modal">X</button>
+                        <button type="button" class="close rounded-circle" data-bs-dismiss="modal" aria-hidden="true">×</button>
                     </div>
                 </div>
-                <div class="modal-body" style="height: 65vh; overflow-y: auto;">
-                    {% csrf_token %}
-                    
-                    <div class="mb-4 row col-sm-12" style="background-color: rgba(0,0,255,.1);">
-                        <img id="display-img" alt="" height="160" width="100%"/>
-                        <div class="col-sm-4">
-                            Add Cover Photo
-                        </div>
-                        <div class="col-sm-8">
-                            {% render_field form.image class="form-control" id="img-input" %}
-                        </div>
+                <div class="modal-body" style="height: 60vh; overflow-y: auto;">
+                    <div class="col-sm-12 mb-3 border border-1">
+                        <center><img id="display-img" src="/media/logo/eventAddPhoto.png" alt="" height="200" width="100%"/></center>
+                        <div class="float-end" style="width:200px">{% render_field form.image class="form-control" id="img-input" %}</div>
                     </div>
-
+                    
                     <div class="col-sm-12">
                         <div class="row col-sm-12 mb-3">
-                            <div class="col-sm-2">
+                            <div class="col-sm-1">
                                 {% if user.profile.image %}
                                     <img src="{{user.profile.image.url}}" alt="" class="rounded-circle" height="45" loading="lazy">
                                 {% else %}
-                                    <img src="" src="../media/profile_pics/user_icon_400x472.png" alt="" class="rounded-circle" height="45" loading="lazy">
+                                    <img src="/media/profile_pics/user_icon_400x472.png" alt="" class="rounded-circle" height="45" loading="lazy">
                                 {% endif %}
                             </div>
-                            <div class="col-sm-9">
+                            <div class="col-sm-4">
                                 <b>{{request.user.get_full_name}}</b><br>
                                 <small>Host - Your Profile</small>
                             </div>
                         </div>
 
-                        <div class="mb-3 col-md-12">
-                            Event Category:
-                            {% render_field form.category class="form-control" placeholder="Event Category" %}
+                        {% csrf_token %}
+                        {% crispy form %}
+
+                        {% comment %} <div>
+                            Select Event Category:
+                        </div>
+                        <div class="mb-3 input-group">
+                            {% render_field form.category class="form-control" placeholder="Event Category" aria-describedby="category-addon"  %}
+                            <span class="input-group-text" id="category-addon">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-caret-down-fill" viewBox="0 0 16 16">
+                                    <path d="M7.247 11.14 2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z"/>
+                                  </svg>
+                            </span>
                             <div class="invalid-feedback">{{ form.category.errors|first }}</div>
+
                         </div>
 
-                        <div class="mb-3 col-md-12">
+                        <div class="mb-3">
                             {% render_field form.eventname class="form-control" placeholder="Event name" %}
                             <div class="invalid-feedback">{{ form.eventname.errors|first }}</div>
                         </div>
 
-                        <div class="row col-md-12 mb-3">
+                        <div class="row mb-3">
                             <div class="col-md-6">
                                 Start Date:
                                 {% render_field form.startdate class="form-control" placeholder="Start Date" %}
@@ -68,8 +76,8 @@
                                 <div class="invalid-feedback">{{ form.starttime.errors|first }}</div>
                             </div>
                         </div>
-
-                        <div class="row col-md-12 mb-3">
+                        <a id="add" href="#" onclick="showEndDate();" style="font-size:11px">+End Date and Time</a>
+                        <div id="enddate" class="row mb-3">
                             <div class="col-md-6">
                                 End Date:
                                 {% render_field form.enddate class="form-control" placeholder="End Date" %}
@@ -81,27 +89,41 @@
                                 <div class="invalid-feedback">{{ form.endtime.errors|first }}</div>
                             </div>
                         </div>
+                        <a id="remove" href="#" onclick="hideEndDate();" style="font-size:11px">-End Date and Time</a>
 
-                        <div id="eventtype" class="mb-3 col-md-12">
-                            {% render_field form.eventtype class="form-control" placeholder="Is it in person or virtual?" %}
+                        <div>
+                            Select Event Type:
+                        </div>
+                        <div id="eventtype" class="mb-3 input-group">
+                            {% render_field form.eventtype class="form-control" placeholder="Is it in person or virtual?" aria-describedby="eventtype-addon" %}
+                            <span class="input-group-text" id="eventtype-addon">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-caret-down-fill" viewBox="0 0 16 16">
+                                    <path d="M7.247 11.14 2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z"/>
+                                  </svg>
+                            </span>
                             <div class="invalid-feedback">{{ form.eventtype.errors|first }}</div>
                         </div>
 
-                        <div id="virtual" class="mb-3 col-md-12" hidden="hidden">
-                            {% comment %} {% render_field form.eventtype class="form-control" placeholder="Is it in person or virtual?" %}
-                            <div class="invalid-feedback">{{ form.eventtype.errors|first }}</div> {% endcomment %}
+                        <div id='maplocationcomment'>
+                            <b style="color:red; font-size:12px">Add location of the event in the search box below</b>
                         </div>
 
-                        <div id="location" class="mb-3 col-md-12" hidden="hidden">
-                            {% comment %} {% render_field form.eventtype class="form-control" placeholder="Is it in person or virtual?" %}
-                            <div class="invalid-feedback">{{ form.eventtype.errors|first }}</div> {% endcomment %}
+                        <div id='maplocation' class="card mb-3">
+                            {{map|safe}}
+                            <hr><br>
+                            {% render_field form.location %}
                         </div>
 
-                        <div class="mb-3 col-md-12">
+                        <div id="virtual" class="mb-3">
+                            {% render_field form.virtual_type %}
+                            <div class="invalid-feedback">{{ form.virtual_type.errors|first }}</div>
+                        </div>
+
+                        <div class="mb-3">
                             {% render_field form.details class="form-control" placeholder="What are the event details?" %}
                             <div class="invalid-feedback">{{ form.details.errors|first }}</div>
                         </div>
-                    </div>
+                    </div> {% endcomment %}
                 </div>
                 <div class="modal-footer">
                     <button type="submit" class="btn btn-primary">Submit</button>
@@ -117,15 +139,45 @@
     imgInput.addEventListener('change', (event)=>{
         const imgObject = event.target.files[0]
         displayImg.src = URL.createObjectURL(imgObject)
-    })
+    });
 
+
+    const maplocation = document.querySelector("#maplocation")
     const virtual = document.querySelector("#virtual")
-    const location = document.querySelector("#location")
-    const eventype = document.querySelector("#id_eventtype")
-    eventype.addEventListener('change', (event)=>{
-        virtual.setAttribute('class', 'hidden')
-        location.setAttribute('class', 'visible')
-    })
-
+    const maplocationcomment = document.querySelector("#maplocationcomment")
+    maplocation.style.display = 'none'
+    virtual.style.display = 'none'
+    maplocationcomment.style.display = 'none'
     
+    const eventtype = document.querySelector("#eventtype")
+    eventtype.addEventListener('change', (event)=>{
+        var a = event.target.value
+        if (a === '0') {
+            maplocationcomment.style.display = 'block'
+            maplocation.style.display = 'block'
+            virtual.style.display = 'none'
+        }
+        else if (a === '1') {
+            virtual.style.display = 'block'
+            maplocationcomment.style.display = 'none'
+            maplocation.style.display = 'none'
+        }
+    });
+
+
+    document.querySelector("#enddate").style.display = 'none'
+    document.querySelector("#remove").style.display = 'none'
+
+    function showEndDate() {
+        document.querySelector("#add").style.display = 'none'
+        document.querySelector("#remove").style.display = 'block'
+        document.querySelector("#enddate").style.display = 'block'
+    }
+
+    function hideEndDate() {
+        document.querySelector("#add").style.display = 'block'
+        document.querySelector("#remove").style.display = 'none'
+        document.querySelector("#enddate").style.display = 'none'
+    }
+
 </script>

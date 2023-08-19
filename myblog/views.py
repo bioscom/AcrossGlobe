@@ -454,7 +454,7 @@ def reply_post(request, id):
                 return redirect('/en/'+ post.slug + '/?page=' + str(paginator.num_pages) + '#' + str(blogpost.id)) #/?page=2
     else:
         if post.parent_id is not None:
-            p = '<blockquote>' + '<p><a href=/' + parentpost.slug + '/#' + str(id) + '><b>' + post.author.username + ':</b></a></p>' + post.content.replace() + '</blockquote><p></p>'
+            p = '<blockquote>' + '<p><a href=/' + parentpost.slug + '/#' + str(id) + '><b>' + post.author.username + ':</b></a></p>' + post.content + '</blockquote><p></p>'
         else:
             p = '<blockquote>' + '<p><a href=/' + post.slug + '/#' + str(id) + '><b>' + post.author.username + ':</b></a></p>' + post.content + '</blockquote><p></p>'
 

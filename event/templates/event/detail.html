@@ -1,0 +1,101 @@
+{% extends 'eventbase.html' %}
+{% load i18n %}
+{% load static %}
+{% load my_tags %}
+{% load humanize %}
+
+{% block title %} {% trans "Discover Events" %} {% endblock %}
+{% block homeactive %} active {% endblock homeactive %}
+
+{% block css %}
+  ul {
+    list-style: none;
+  }
+{% endblock %}
+
+{% block body %}
+
+<!--Main layout-->  
+<main style="margin-top: 45px">
+    <div class="container py-4">
+        <div class="col-sm-8" style="margin: 0 auto">
+            <div class="card">
+                <img src="/media/{{event.image}}" style="height:350px; object-fit:fill">
+            </div>
+        </div>
+        <div class="col-sm-12 row">
+            <div class="col-sm-2">
+                <div class="card shadow" style="height:100px;">
+                    <div class="card-header bg-danger"></div>
+                    <div class="card-body h1 text-center">{{date}}</div>
+                </div>
+            </div>
+            <div class="col-sm-10">
+                <div class="text-danger h4">{{eventdate}} AT {{event.starttime}}</div>
+                <div class="h2">{{event.eventname}}</div>
+                <div class="text-secondary">{{event.eventvenue}}</div>
+            </div>
+        </div>
+        <div class="float-end">
+            {% if user.is_authenticated %}
+                <a href="#" data-id="{{ event.id }}" data-action="{% if request.user in users_like %}un{% endif %}like" class="submit-btn btn btn-secondary text-white">
+                    {% if request.user not in users_like %}Interested{% else %}Interested{% endif %}       
+                </a>
+            {% endif %}
+        </div>
+    </div>
+    <hr>
+    <div class="container py-1">
+        <div class="row my-3">
+            <div class="col-sm-6">
+                <div class="card shadow" style="height: 22rem">
+                    <div class="card-body d-flex flex-column">
+                        <div class='card-title'><h4>Details</h4></div>
+                        <span class='mb-2'> 
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-people" viewBox="0 0 20 20">
+                                <path d="M15 14s1 0 1-1-1-4-5-4-5 3-5 4 1 1 1 1h8Zm-7.978-1A.261.261 0 0 1 7 12.996c.001-.264.167-1.03.76-1.72C8.312 10.629 9.282 10 11 10c1.717 0 2.687.63 3.24 1.276.593.69.758 1.457.76 1.72l-.008.002a.274.274 0 0 1-.014.002H7.022ZM11 7a2 2 0 1 0 0-4 2 2 0 0 0 0 4Zm3-2a3 3 0 1 1-6 0 3 3 0 0 1 6 0ZM6.936 9.28a5.88 5.88 0 0 0-1.23-.247A7.35 7.35 0 0 0 5 9c-4 0-5 3-5 4 0 .667.333 1 1 1h4.216A2.238 2.238 0 0 1 5 13c0-1.01.377-2.042 1.09-2.904.243-.294.526-.569.846-.816ZM4.92 10A5.493 5.493 0 0 0 4 13H1c0-.26.164-1.03.76-1.724.545-.636 1.492-1.256 3.16-1.275ZM1.5 5.5a3 3 0 1 1 6 0 3 3 0 0 1-6 0Zm3-2a2 2 0 1 0 0 4 2 2 0 0 0 0-4Z"/>
+                            </svg>
+                            <b>
+                                {% with total_likes=event.users_like.count users_like=event.users_like.all %}
+                                    <span class="total">{{ total_likes }}</span> people responded
+                                {% endwith %}
+                            </b>
+                        </span>
+
+                        <span class='mb-2'>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-person" viewBox="0 0 20 20">
+                                <path d="M8 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6Zm2-3a2 2 0 1 1-4 0 2 2 0 0 1 4 0Zm4 8c0 1-1 1-1 1H3s-1 0-1-1 1-4 6-4 6 3 6 4Zm-1-.004c-.001-.246-.154-.986-.832-1.664C11.516 10.68 10.289 10 8 10c-2.29 0-3.516.68-4.168 1.332-.678.678-.83 1.418-.832 1.664h10Z"/>
+                            </svg>
+                            Event by <b><a href="#" hx-get="/account/user_profile/{{event.author.id}}/" hx-target="#dialog" class="user">{{event.author}}</a></b></span>
+                        <Span class='mb-2'>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-geo-alt" viewBox="0 0 20 20">
+                                <path d="M12.166 8.94c-.524 1.062-1.234 2.12-1.96 3.07A31.493 31.493 0 0 1 8 14.58a31.481 31.481 0 0 1-2.206-2.57c-.726-.95-1.436-2.008-1.96-3.07C3.304 7.867 3 6.862 3 6a5 5 0 0 1 10 0c0 .862-.305 1.867-.834 2.94zM8 16s6-5.686 6-10A6 6 0 0 0 2 6c0 4.314 6 10 6 10z"/>
+                                <path d="M8 8a2 2 0 1 1 0-4 2 2 0 0 1 0 4zm0 1a3 3 0 1 0 0-6 3 3 0 0 0 0 6z"/>
+                                </svg>
+                            <b>{{event.eventvenue}}</b>
+                        </span>
+                        <span class='mb-2'>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-globe-americas" viewBox="0 0 20 20">
+                                <path d="M8 0a8 8 0 1 0 0 16A8 8 0 0 0 8 0ZM2.04 4.326c.325 1.329 2.532 2.54 3.717 3.19.48.263.793.434.743.484-.08.08-.162.158-.242.234-.416.396-.787.749-.758 1.266.035.634.618.824 1.214 1.017.577.188 1.168.38 1.286.983.082.417-.075.988-.22 1.52-.215.782-.406 1.48.22 1.48 1.5-.5 3.798-3.186 4-5 .138-1.243-2-2-3.5-2.5-.478-.16-.755.081-.99.284-.172.15-.322.279-.51.216-.445-.148-2.5-2-1.5-2.5.78-.39.952-.171 1.227.182.078.099.163.208.273.318.609.304.662-.132.723-.633.039-.322.081-.671.277-.867.434-.434 1.265-.791 2.028-1.12.712-.306 1.365-.587 1.579-.88A7 7 0 1 1 2.04 4.327Z"/>
+                                </svg>
+                            
+                            <b>Open to anyone on Acrossglobe</b>
+                            </span>   
+                        {{event.details}}
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-6">
+                <div class="card shadow float-end" style="height: 22rem">
+                    <a href="#" hx-get="{% url 'event:popup_map' event.slug %}" hx-target="#dialog">
+                        <div class="card-body">{{map|safe}}</div>
+                        <div class="float-end" style="font-size:11px">Click to expand</div>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+<!--Main layout-->
+
+{% endblock %}
