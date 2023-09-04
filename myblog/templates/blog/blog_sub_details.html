@@ -25,11 +25,11 @@
                   {% if not forloop.last %}/{% endif %}
             {% endfor %}
       </div>
-      {% comment %} <div class="vertipics mt-2 mb-2 text-center">
-            <a href="#" hx-get="{% url 'MyBlog:adverts' %}" hx-target="#dialog" rel=sponsored><img src="https://www.nairaland.com/vertipics/6ez6otwqpwazgmvtld26kw3q2roijgou.png"></a>
-            <a href="#" hx-get="{% url 'MyBlog:adverts' %}" hx-target="#dialog" rel=sponsored><img src="https://www.nairaland.com/vertipics/iqax0ww60vcft2zqxgm9ocus2dq86ae0.jpg"></a>
-            <a href="#" hx-get="{% url 'MyBlog:adverts' %}" hx-target="#dialog" rel=sponsored><img src="https://www.nairaland.com/vertipics/1cqm2xehafkcin1q0te5z27n9tz69oy6.jpg"></a>
-      </div> {% endcomment %}
+      <div class="vertipics mt-2 mb-2 text-center">
+            <a href="#" hx-get="{% url 'campaign:adverts' %}" hx-target="#dialog" rel=sponsored><img src="/media/logo/freeads.jpeg"></a>
+            <a href="#" hx-get="{% url 'campaign:adverts' %}" hx-target="#dialog" rel=sponsored><img src="/media/logo/freeads.jpeg"></a>
+            <a href="#" hx-get="{% url 'campaign:adverts' %}" hx-target="#dialog" rel=sponsored><img src="/media/logo/freeads.jpeg"></a>
+      </div>
 
       <div class="container mt-3 mb-1 text-center">
             <a href="#" hx-get="{% url 'MyBlog:add_sub_comment' posts.slug %}" hx-target="#dialog">(Reply) <a href="#down"><b>(Go Down)</b></a></a>
@@ -87,11 +87,11 @@
             {% include "blog/blog_sub_details_comments.html" %}
       </div>
 
-      {% comment %} <div class="vertipics mt-2 mb-2 text-center">
-            <a href="#" hx-get="{% url 'MyBlog:adverts' %}" hx-target="#dialog" rel=sponsored><img src="https://www.nairaland.com/vertipics/6ez6otwqpwazgmvtld26kw3q2roijgou.png"></a>
-            <a href="#" hx-get="{% url 'MyBlog:adverts' %}" hx-target="#dialog" rel=sponsored><img src="https://www.nairaland.com/vertipics/iqax0ww60vcft2zqxgm9ocus2dq86ae0.jpg"></a>
-            <a href="#" hx-get="{% url 'MyBlog:adverts' %}" hx-target="#dialog" rel=sponsored><img src="https://www.nairaland.com/vertipics/1cqm2xehafkcin1q0te5z27n9tz69oy6.jpg"></a>
-      </div> {% endcomment %}
+      <div class="vertipics mt-2 mb-2 text-center">
+            <a href="#" hx-get="{% url 'campaign:adverts' %}" hx-target="#dialog" rel=sponsored><img src="/media/logo/freeads.jpeg"></a>
+            <a href="#" hx-get="{% url 'campaign:adverts' %}" hx-target="#dialog" rel=sponsored><img src="/media/logo/freeads.jpeg"></a>
+            <a href="#" hx-get="{% url 'campaign:adverts' %}" hx-target="#dialog" rel=sponsored><img src="/media/logo/freeads.jpeg"></a>
+      </div>
 
       <div class="mb-2">
             {% for title in datas.title.all %}

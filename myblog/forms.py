@@ -15,7 +15,7 @@ from ckeditor_uploader.widgets import CKEditorUploadingWidget
 class CategoryForm(forms.ModelForm):
     class Meta:
         model = BlogPostCategories
-        fields = ('type', 'category_title', 'sub_title', 'moderatoremail', 'adrate', 'discount')
+        fields = ('type', 'category_title', 'sub_title', 'moderatoremail', 'adrate', 'discount', 'discount_type', )
         widgets = {
             #     'type':forms.Select(TypeCategories),
             'category_title': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Blog Category'}),
@@ -86,14 +86,3 @@ class UserCreationForm(UserCreationFormBase):
             'password': self.cleaned_data['password1']}
 
 
-class AdvertisementForm(forms.ModelForm):
-    class Meta:
-        model = Advertisement
-        fields = ('urllink', 'image', )
-        widgets = {
-            'image': forms.ClearableFileInput(attrs={'allow_multiple_selected': True}),
-            'urllink': forms.TextInput(attrs={'placeholder': 'www.acrossglobe.com'}),
-        }
-        labels = {
-            'urllink': 'Landing Page',
-        }

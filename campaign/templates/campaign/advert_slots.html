@@ -1,0 +1,77 @@
+{% extends 'base.html' %}
+{% load i18n %}
+
+{% block title %}  {% endblock %}
+
+{% block css %}
+     
+{% endblock %}
+
+{% block body %}
+
+<div class="card">
+    <div class="card-header"> 
+        Advert Slots
+    </div>
+    <div class="card-body">
+        <form action="/campaign/" enctype="multipart/form-data" method="POST" name="slotsForm">
+            <div class="col-sm-12">
+                <select class="js-example-basic-single form-control" name="username" onChange="slotsForm.submit();">
+                    <option>Search Ad section...</option>
+                    {% for cat in category %}
+                        <option value="{{cat.id}}">{{cat.category_title}}</option>
+                    {% endfor %} 
+                </select>
+            </div>
+            <hr>
+            <table class="table table-hover" style="width:100%">
+                <tr>
+                    <th>...</th>
+                    <th>Ad Sections</th>
+                    <th>Advert</th>
+                    <th>Start Date</th>
+                    <th>End Date</th>
+                    <th>Ad Banner</th>
+                    <th>Landing Page</th>
+                    <th>Status</th>
+                    <th>Approved?</th>
+                    <th></th>
+                </tr>
+                {% for cat in category %}
+                    {% for ad in ads %}
+                        <tr>
+                            {% if ad.category_id == cat.id %}
+                            <td>{{ad.ordering}}</td>
+                            <td>{{ad.category.category_title}}</td>
+                            <td>{{ad.advert_id}}</td>
+                            <td>{{ad.advert.start_date|date:'D, d M Y'}}</td>
+                            <td>{{ad.advert.end_date|date:'D, d M Y'}}</td>
+                            <td>
+                                <div class="vertipics mt-2 mb-2 text-center">
+                                    <img src="/media/{{ad.advert.image}}"/>
+                                </div>
+                            </td>
+                            <td><a href="{{ad.advert.urllink}}">{{ad.advert.urllink}}</a></td>
+                            <td>{{ad.advert.status}}</td>
+                            <td>{{ad.advert.is_approved}}</td>
+                            <td><button type="button" class="btn btn-primary" href="#" hx-get="" hx-target="#dialog">Ad Campaign</button></td>
+                            {% endif %}
+                        </tr>
+                    {% endfor %}
+                {% endfor %}
+            </table>
+            {% comment %} <button type="submit" class="btn btn-primary">Update Advert Slots</button> {% endcomment %}
+        </form>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block js %}
+<script>
+    // In your Javascript (external .js resource or <script> tag)
+    $(document).ready(function() {
+        $('.js-example-basic-single').select2();
+    });
+</script>
+{% endblock %}

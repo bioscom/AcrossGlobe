@@ -1,3 +1,8 @@
+{% extends "base.html" %}
+
+{% block title %}My Profile{% endblock %}
+
+
 {% load widget_tweaks %}
 {% load crispy_forms_tags %}
 
@@ -6,61 +11,65 @@
 {% endblock %}
 
 {% block body %}
-    <div class="modal-content">
-        <div class="modal-header text-center">
-            <h3>{{ user }} Profile</h3>
+    <div class="card-content">
+        <div class="card-header text-center">
+            <h4>{{ user }} Profile</h4>
         </div>
-        <div class="modal-body" style="height: 80vh; overflow-y: auto;">
-            <div class="row col-sm-12 shadow p-3 mb-2 bg-body rounded">
-                <div class="col-sm-3">
-                    <div class="profile-img">
-                        {% if user.profile.image %}
-                            <img src="{{user.profile.image.url}}" alt="" class="img-fluid">
-                        {% else %}
-                            <img src="" src="../media/profile_pics/user_icon_400x472.png" alt="" class="img-fluid">
-                        {% endif %}
+        <div class="card-body">
+            <div class="col-sm-12 shadow p-3 mb-2 bg-body rounded">
+                <div class="row">
+                    <div class="col-sm-3">
+                        <div class="profile-img">
+                            {% if user.profile.image %}
+                                <img src="{{user.profile.image.url}}" alt="" class="img-fluid">
+                            {% else %}
+                                <img src="" src="../media/profile_pics/user_icon_400x472.png" alt="" class="img-fluid">
+                            {% endif %}
+                        </div>
+                        
                     </div>
-                    <center><button type="button" href="#" hx-get="{% url "edit_profile" %}" hx-target="#dialog" class="btn btn-primary mt-2">Edit Profile</button></center>
-                </div>
-                <div class="col-sm-9">
-                    <table>
-                        <tr>
-                            <td><b>Username:</b></td>
-                            <td>{{user}}</td>
-                        </tr>
-                        <tr>
-                            <td><b>Full Name:</b></td>
-                            <td>{{user.get_full_name}}</td>
-                        </tr>
-                        <tr>
-                            <td><b>Email:</b></td>
-                            <td>{{user.email}}</td>
-                        </tr>
-                        <tr>
-                            <td><b>Phone Number:</b></td>
-                            <td>{{user.profile.phone_no}}</td>
-                        </tr>
-                        <tr>
-                            <td><b>Bio:</b></td>
-                            <td>{{user.profile.bio}}</td>
-                        </tr>
-                        <tr>
-                            <td><b>Linkedin:</b></td>
-                            <td><a href="{{user.profile.linkedin}}">{{user.profile.linkedin}}</a></td>
-                        </tr>
-                        <tr>
-                            <td><b>Instagram:</b></td>
-                            <td><a href="{{user.profile.instagram}}">{{user.profile.instagram}}</a></td>
-                        </tr>
-                        <tr>
-                            <td><b>Facebook:</b></td>
-                            <td><a href="{{user.profile.facebook}}">{{user.profile.facebook}}</a></td>
-                        </tr>
-                    </table>
+                    <div class="col-sm-9">
+                        <table>
+                            <tr>
+                                <td><b>Username:</b></td>
+                                <td>{{user}}</td>
+                            </tr>
+                            <tr>
+                                <td><b>Full Name:</b></td>
+                                <td>{{user.get_full_name}}</td>
+                            </tr>
+                            <tr>
+                                <td><b>Email:</b></td>
+                                <td>{{user.email}}</td>
+                            </tr>
+                            <tr>
+                                <td><b>Phone Number:</b></td>
+                                <td>{{user.profile.phone_no}}</td>
+                            </tr>
+                            <tr>
+                                <td><b>Bio:</b></td>
+                                <td>{{user.profile.bio}}</td>
+                            </tr>
+                            <tr>
+                                <td><b>Linkedin:</b></td>
+                                <td><a href="{{user.profile.linkedin}}">{{user.profile.linkedin}}</a></td>
+                            </tr>
+                            <tr>
+                                <td><b>Instagram:</b></td>
+                                <td><a href="{{user.profile.instagram}}">{{user.profile.instagram}}</a></td>
+                            </tr>
+                            <tr>
+                                <td><b>Facebook:</b></td>
+                                <td><a href="{{user.profile.facebook}}">{{user.profile.facebook}}</a></td>
+                            </tr>
+                        </table>
+                        <button type="button" hx-get="{% url "edit_profile" %}" hx-target="#dialog" class="btn btn-primary mt-2">Edit Profile</button>
+                        <a type="button" class="btn btn-primary mt-2" href="{% url 'campaign:myads' %}">My Adverts</a>
+                    </div>
                 </div>
             </div>
             
-            <div class="col-sm-12 shadow p-3 mb-2 bg-body rounded text-center" style="height: 60vh; overflow-y: auto;">
+            <div class="col-sm-12 shadow p-3 mb-2 bg-body rounded text-center">
                 <h5>My Posts</h5>
                 <hr>
                 {% for p in post %}
@@ -107,13 +116,13 @@
                 <span class="mb-2"><a href="#">Posts I've Liked</a> | <a href="#">Posts I've shared </a> | <a href="#">My Quotes & Mentions</a> </span><br>
                 <span class="mb-2"><b>Time registered:</b> {{user.date_joined}}</span><br>
                 <span class="mb-2"><b>Last seen:</b> {{user.last_login}}</span><br>
-                <span class="mb-2"><a href="#">View My posts ()</a> | <a href="#">View My topics () </a></span><br>
+                <span class="mb-2"><a href="#">View My posts ()</a> | <a href="#">View My topics () </a> | <a href="{% url 'campaign:myads' %}"> My Adverts () </a></span><br>
                 <span class="mb-2"><b>Section Most Active In:</b> </span><br>
             </div>
 
         </div>
-        <div class="modal-footer">
+        {% comment %} <div class="card-footer">
             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</a>
-        </div>
+        </div> {% endcomment %}
     </div>
 {% endblock %}

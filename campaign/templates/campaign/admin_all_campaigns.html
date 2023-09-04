@@ -1,0 +1,63 @@
+{% extends 'base.html' %}
+{% load i18n %}
+
+{% block title %}  {% endblock %}
+
+{% block css %}
+     
+{% endblock %}
+
+{% block body %}
+
+<div class="card">
+    <div class="card-header"> 
+       <h5> Admin - All Adverts </h5>
+    </div>
+    <div class="card-body" style="height:80vh; overflow-y:auto; font-size:15px">
+        <table class="table table-hover" style="width:100%">
+            <tr>
+                <th>...</th>
+                <th></th>
+                <th>User</th>
+                <th>Start Date</th>
+                <th>End Date</th>
+                <th>Ad Banner/landing Page</th>
+                <th>Status</th>
+                <th>Approved?</th>
+                <th>Created Date</th>
+            </tr>
+                {% for ad in alladverts %}
+                    <tr>
+                        {% if ad.category_id == cat.id %}
+                            <td>{{forloop.counter}}</td>
+                            <td><button type="button" class="btn btn-danger" href="#" hx-get="{% url 'campaign:approval' ad.pk %}" hx-target="#dialog">Approve</button></td>
+                            <td><a href="#" hx-get="/account/user_profile/{{ad.user.id}}/" hx-target="#dialog" class="user">{{ad.user.username}}</a></td>
+                            <td>{{ad.start_date|date:'D, d M Y'}}</td>
+                            <td>{{ad.end_date|date:'D, d M Y'}}</td>
+                            <td>
+                                <div class="vertipics mt-2 mb-2 text-center">
+                                    <a href="{{ad.urllink}}" target="_blank"><img src="/media/{{ad.image}}"></a>
+                                </div>
+                            </td>
+                            {% if ad.status == 'Pending' %} 
+                                <td class="text-danger fw-bold">{{ad.status}}</td>
+                            {% elif ad.status == 'Approved' %}
+                                <td class="text-success fw-bold">{{ad.status}}</td>
+                            {% elif ad.status == 'Denied' %}
+                                <td class="text-danger fw-bold">{{ad.status}}</td>
+                            {% elif ad.status == 'Advertising' %}
+                                <td class="text-warning fw-bold">{{ad.status}}</td>
+                            {% elif ad.status == 'Completed' %}
+                                <td class="text-success fw-bold">{{ad.status}}</td>
+                            {% endif %}
+                            <td>{{ad.is_approved}}</td>
+                            <td>{{ad.creation_date}}</td>
+                           
+                        {% endif %}
+                    </tr>
+                {% endfor %}
+        </table>
+    </div>
+</div>
+
+{% endblock %}

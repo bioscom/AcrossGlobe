@@ -72,7 +72,7 @@ def send_login_mail(request, user):
     message += "User Agent: " + obj.ua_string + "\n"
     message += "IP Address: " + obj.remote_addr + "\n \n"
     message += "Best Regards, \n"
-    message += "Across Globe Reporting, \n" 
+    message += "Across Globe, \n" 
     message += "https://acrossglobes.com/"
     
     try:

@@ -19,12 +19,11 @@
   {% comment %} <p class="mt-3"><a href="/sub/{{subcategories.slug}}/">{{subcategories.title}}</a>: <a>{{subcategories.title}} <b>Ad Rate:{{category.adrate|floatformat:2|intcomma}}</b>/week ({{category.discount}}% premium) </a></p> {% endcomment %}
 </div>
 
-
-{% comment %} <div class="vertipics mt-2 mb-2 text-center">
-  <a href="#" hx-get="{% url 'MyBlog:adverts' %}" hx-target="#dialog" rel=sponsored><img src="https://www.nairaland.com/vertipics/6ez6otwqpwazgmvtld26kw3q2roijgou.png"></a>
-  <a href="#" hx-get="{% url 'MyBlog:adverts' %}" hx-target="#dialog" rel=sponsored><img src="https://www.nairaland.com/vertipics/iqax0ww60vcft2zqxgm9ocus2dq86ae0.jpg"></a>
-  <a href="#" hx-get="{% url 'MyBlog:adverts' %}" hx-target="#dialog" rel=sponsored><img src="https://www.nairaland.com/vertipics/1cqm2xehafkcin1q0te5z27n9tz69oy6.jpg"></a>
-</div> {% endcomment %}
+<div class="vertipics mt-2 mb-2 text-center">
+  <a href="#" hx-get="{% url 'campaign:adverts' %}" hx-target="#dialog" rel=sponsored><img src="/media/logo/freeads.jpeg"></a>
+  <a href="#" hx-get="{% url 'campaign:adverts' %}" hx-target="#dialog" rel=sponsored><img src="/media/logo/freeads.jpeg"></a>
+  <a href="#" hx-get="{% url 'campaign:adverts' %}" hx-target="#dialog" rel=sponsored><img src="/media/logo/freeads.jpeg"></a>
+</div>
 
 <div class="text-center mt-2 mb-2">
   {% if subcategories.title == 'Muslims Forum' %}
@@ -38,13 +37,11 @@
 
 {% include "blog/blog_sub_category_ajax.html" %}
 
-{% comment %} <div class="vertipics mt-2 mb-2 text-center">
-  <a href="#" hx-get="{% url 'MyBlog:adverts' %}" hx-target="#dialog" rel=sponsored><img src="https://www.nairaland.com/vertipics/6ez6otwqpwazgmvtld26kw3q2roijgou.png"></a>
-  <a href="#" hx-get="{% url 'MyBlog:adverts' %}" hx-target="#dialog" rel=sponsored><img src="https://www.nairaland.com/vertipics/iqax0ww60vcft2zqxgm9ocus2dq86ae0.jpg"></a>
-  <a href="#" hx-get="{% url 'MyBlog:adverts' %}" hx-target="#dialog" rel=sponsored><img src="https://www.nairaland.com/vertipics/1cqm2xehafkcin1q0te5z27n9tz69oy6.jpg"></a>
-</div> {% endcomment %}
-
-      
+<div class="vertipics mt-2 mb-2 text-center">
+  <a href="#" hx-get="{% url 'campaign:adverts' %}" hx-target="#dialog" rel=sponsored><img src="/media/logo/freeads.jpeg"></a>
+  <a href="#" hx-get="{% url 'campaign:adverts' %}" hx-target="#dialog" rel=sponsored><img src="/media/logo/freeads.jpeg"></a>
+  <a href="#" hx-get="{% url 'campaign:adverts' %}" hx-target="#dialog" rel=sponsored><img src="/media/logo/freeads.jpeg"></a>
+</div>
 
 
 {% endblock %}

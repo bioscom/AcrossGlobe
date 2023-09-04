@@ -1,0 +1,81 @@
+{% extends 'base.html' %}
+{% load widget_tweaks %}
+{% load crispy_forms_tags %}
+{% load humanize %}
+{% load mathfilters %}
+
+{% block title %} Category List - acrossGlobe {% endblock %}
+{% block homeactive %} active {% endblock homeactive %}
+
+{% block css %}
+{% endblock %}
+
+{% block body %}
+    <div class="container mt-3 mb-1 text-center">
+        <h3>Estimated Promotion Rate - Across Globe</h3>
+    </div>
+
+    <div class="mb-2 text-center">
+        <b>Estimated cost of advertising on each section of Across Globe</b>
+    </div>
+
+    <form action="{{request.path}}" method="POST">
+        <div class="mb-2 text-center">
+            <b>Order by: <a href"#">Popularity</a> / <a href"#">Alphabetically</a></b>
+        </div>
+
+        <div class="card mt-2">
+            <div class="card-body">
+                <table class="table table-hover">
+                    <tbody hx-trigger="load, ListChanged from:body" hx-target="this">
+                        {% for category in categories %}
+                            <tr>
+                                <td><a href="/{{category.slug}}/{{category.id}}"><b>{{category.category_title}}</b></td>
+                                <td class="text-secondary"><b>&#8358;{{ category.adrate|floatformat:2|intcomma }}</b></td>
+                                {% if category.discount_type == 'Premium'%}
+                                    <td><b>&#8358;{{ category.adrate|mul:category.discount|add:category.adrate|floatformat:2|intcomma }}/week<b></td>
+                                {% else %}
+                                    <td><b>&#8358;{{ category.adrate|mul:category.discount|sub:category.adrate|abs|floatformat:2|intcomma }}/week<b></td>
+                                {% endif %}
+
+                                {% if category.discount_type == 'Premium'%}
+                                    <td class="text-danger"><b>{{ category.discount|mul:100 }}%</b> {{ category.discount_type }}</td>
+                                {% else %}
+                                    <td class="text-primary"><b>{{ category.discount|mul:100 }}%</b> {{ category.discount_type }}</td>
+                                {% endif %}
+                            </tr>
+                            {% for sub in subcategories %}
+                                {% if sub.category_id == category.id %}
+                                    <tr>
+                                        {% comment %} <td>{{ category.category_title }}</td> {% endcomment %}
+                                        <td>{{ sub.title }}</td>
+                                        <td>&#8358;{{ sub.adrate|floatformat:2|intcomma }}</td>
+                                        {% if sub.discount_type == 'P'%}
+                                            <td>&#8358;{{ sub.adrate|add:sub.adrate|mul:sub.discount }}</td>
+                                        {% else %}
+                                            <td>&#8358;{{ sub.adrate|sub:sub.adrate|mul:sub.discount }}</td>
+                                        {% endif %}
+                                        {% if sub.discount_type == 'P'%}
+                                            <td class="text-danger">{{ sub.discount }} {{ sub.discount_type }}</td>
+                                        {% else %}
+                                            <td class="text-primary">{{ sub.discount }} {{ sub.discount_type }}</td>
+                                        {% endif %}
+                                    </tr>
+                                {% endif %}
+                            {% endfor %}
+                        {% endfor%}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </form>
+{% endblock %}
+
+{% block js %}
+{% comment %} <script>
+    {% if alert %}
+    alert('Category added successfully.');
+    document.location = '/';
+    {% endif %}
+</script> {% endcomment %}
+{% endblock %}

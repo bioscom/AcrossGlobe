@@ -1,0 +1,73 @@
+{% load widget_tweaks %}
+{% load crispy_forms_tags %}
+
+{% block css %}
+{% endblock %}
+
+{% block body %}
+
+    <div class="modal-content"> 
+        <form action="{{request.path}}" enctype="multipart/form-data" method="POST">
+            {% csrf_token %}
+            <div class="modal-header"> 
+                <h4>Available Ads Slots</h4>
+            </div>
+            <div class="modal-body" style="height: 75vh; overflow-y: auto;">
+                <div class="text-bold">
+                    <h6>Select the Ad section under which you want to place your advert. There are 6 slots under each Ad section.
+                    Select the slot where you want your Ad to appear.</h6>
+                </div>
+                <hr>
+            
+                    <table class="table table-hover">
+                        <tr>
+                            <td></td>
+                            <td>Ad Section</td>
+                            <td>Slot ID</td>
+                            <td>Advert ID</td>
+                            <td>Start Date</td>
+                            <td>End Date</td>
+                            <td>Ad Banner</td>
+                            <td>Landing Page</td>
+                            <td>Status</td>
+                            <td>Approved?</td>
+                            {% comment %} <td></td> {% endcomment %}
+                        </tr>
+                        {% for cat in category %}
+                            {% for ad in ads %}
+                                <tr>
+                                    {% if ad.category_id == cat.id %}
+                                    <td><input type="radio" id="{{ad.pk}}" name="adslotradio" value="{{ad.pk}}"></td>
+                                    <td>{{ad.category.category_title}}</td>
+                                    <td>{{ad.adslot}}</td>
+                                    <td>{{ad.advert_id}}</td>
+                                    <td>{{ad.start_date|date:'D, d M Y'}}</td>
+                                    <td>{{ad.end_date|date:'D, d M Y'}}</td>
+                                    <td>{{ad.image}}</td>
+                                    <td>{{ad.urllink}}</td>
+                                    <td>{{ad.status}}</td>
+                                    <td>{{ad.is_approved}}</td>
+                                    {% comment %} <td><button type="button" class="btn btn-primary" title="Advertise"><i class="fa fa-bullhorn"></i></button></td> {% endcomment %}
+                                    {% endif %}
+                                </tr>
+                            {% endfor %}
+                        {% endfor %}
+                    </table>
+                    {% comment %} <button type="submit" class="btn btn-primary">Update Advert Slots</button> {% endcomment %}
+            
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</a>
+                <button type="submit" class="submit-btn btn btn-primary">Submit</button>
+            </div> 
+        </form>
+        
+    </div>
+    {% if ad.errors %}
+        <ul>
+            {% for key,value in ad.errors.items %} 
+                <li>{{ key|escape }} : {{ value|escape }}</li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+{% endblock %}

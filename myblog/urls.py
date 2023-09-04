@@ -11,11 +11,10 @@ app_name = 'MyBlog'
 
 urlpatterns = [
     
-    #   Administrative Areas
-    path(_('admin/'), admin.site.urls),
+    #path('test/', views.test, name="home"),
     
-    #   Advertisement
-    path(_('adverts/'), views.adverts, name="adverts"),                                                #   blog/partial_advertisement.html
+    #   Administrative Areas
+    path(_('admin/'), admin.site.urls),  
     
     #   Category list by type
     path(_('cat/<int:pk>/'), views.category_by_type, name="category_by_type"), 

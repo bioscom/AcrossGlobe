@@ -1,0 +1,1 @@
+export const API_URL = "http://acrossglobe:8000/en/event/api/events/";

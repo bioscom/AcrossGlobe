@@ -14,19 +14,63 @@
 
 {% include "blog/menus.html" %}
 
-{% comment %} <div class="vertipics mt-2 mb-2 text-center">
-  <a href="#" hx-get="{% url 'MyBlog:adverts' %}" hx-target="#dialog" rel=sponsored><img src="https://www.nairaland.com/vertipics/6ez6otwqpwazgmvtld26kw3q2roijgou.png"></a>
-  <a href="#" hx-get="{% url 'MyBlog:adverts' %}" hx-target="#dialog" rel=sponsored><img src="https://www.nairaland.com/vertipics/iqax0ww60vcft2zqxgm9ocus2dq86ae0.jpg"></a>
-  <a href="#" hx-get="{% url 'MyBlog:adverts' %}" hx-target="#dialog" rel=sponsored><img src="https://www.nairaland.com/vertipics/1cqm2xehafkcin1q0te5z27n9tz69oy6.jpg"></a>
-</div> {% endcomment %}
+<div class="vertipics mt-2 mb-2 text-center">
+  {% for ad in ads %}
+    {% if ad.adslot == 1 %}
+      {% if ad.advert_id != Null %}
+        <a href="{{ad.advert.urllink}}"><img src="/media/{{ad.advert.image}}"></a>
+      {% else %}
+        <a href="#" hx-get="{% url 'campaign:adverts' %}" hx-target="#dialog" rel=sponsored><img src="/media/logo/freeads.jpeg"></a>
+      {% endif %} 
+    {% endif %}
+
+    {% if ad.adslot == 2 %}
+      {% if ad.advert_id != Null %}
+        <a href="{{ad.advert.urllink}}"><img src="/media/{{ad.advert.image}}"></a>
+      {% else %}
+        <a href="#" hx-get="{% url 'campaign:adverts' %}" hx-target="#dialog" rel=sponsored><img src="/media/logo/freeads.jpeg"></a>
+      {% endif %} 
+    {% endif %}
+
+    {% if ad.adslot == 3 %}
+      {% if ad.advert_id != Null %}
+        <a href="{{ad.advert.urllink}}"><img src="/media/{{ad.advert.image}}"></a>
+      {% else %}
+        <a href="#" hx-get="{% url 'campaign:adverts' %}" hx-target="#dialog" rel=sponsored><img src="/media/logo/freeads.jpeg"></a>
+      {% endif %} 
+    {% endif %}
+  {% endfor %}
+</div>
 
 {% include "blog/blog_list_ajax.html" %}
 
-{% comment %} <div class="vertipics mt-2 mb-2 text-center">
-  <a href="#" hx-get="{% url 'MyBlog:adverts' %}" hx-target="#dialog" rel=sponsored><img src="https://www.nairaland.com/vertipics/6ez6otwqpwazgmvtld26kw3q2roijgou.png"></a>
-  <a href="#" hx-get="{% url 'MyBlog:adverts' %}" hx-target="#dialog" rel=sponsored><img src="https://www.nairaland.com/vertipics/iqax0ww60vcft2zqxgm9ocus2dq86ae0.jpg"></a>
-  <a href="#" hx-get="{% url 'MyBlog:adverts' %}" hx-target="#dialog" rel=sponsored><img src="https://www.nairaland.com/vertipics/1cqm2xehafkcin1q0te5z27n9tz69oy6.jpg"></a>
-</div> {% endcomment %}
+<div class="vertipics mt-2 mb-2 text-center">
+  {% for ad in ads %}
+    {% if ad.adslot == 4 %}
+      {% if ad.advert_id != Null %}
+        <a href="{{ad.advert.urllink}}"><img src="/media/{{ad.advert.image}}"></a>
+      {% else %}
+        <a href="#" hx-get="{% url 'campaign:adverts' %}" hx-target="#dialog" rel=sponsored><img src="/media/logo/freeads.jpeg"></a>
+      {% endif %} 
+    {% endif %}
+
+    {% if ad.adslot == 5 %}
+      {% if ad.advert_id != Null %}
+        <a href="{{ad.advert.urllink}}"><img src="/media/{{ad.advert.image}}"></a>
+      {% else %}
+        <a href="#" hx-get="{% url 'campaign:adverts' %}" hx-target="#dialog" rel=sponsored><img src="/media/logo/freeads.jpeg"></a>
+      {% endif %} 
+    {% endif %}
+
+    {% if ad.adslot == 6 %}
+      {% if ad.advert_id != Null %}
+        <a href="{{ad.advert.urllink}}"><img src="/media/{{ad.advert.image}}"></a>
+      {% else %}
+        <a href="#" hx-get="{% url 'campaign:adverts' %}" hx-target="#dialog" rel=sponsored><img src="/media/logo/freeads.jpeg"></a>
+      {% endif %} 
+    {% endif %}
+  {% endfor %}
+</div>
 
 
 {% include "blog/membersonline.html" %}

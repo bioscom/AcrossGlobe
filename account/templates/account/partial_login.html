@@ -47,11 +47,11 @@
               </div>
             </div>
             <div class="col-sm-4">
-              <div class="mb-1">
+              {% comment %} <div class="mb-1">
                 <a href="{% url "social:begin" "facebook" %}" class="d-inline-flex pl-2 pr-2"> 
                   <span style="width:150px;" class="btn btn-primary btn-sm"> Login with Facebook </span> 
                 </a>
-              </div>
+              </div> {% endcomment %}
               <div class="mb-1">
                 <a href="{% url "social:begin" "google-oauth2" %}" class="d-inline-flex pl-2 pr-2"> 
                   <span style="width:150px;" class="btn btn-danger btn-sm"> Login with Google </span>

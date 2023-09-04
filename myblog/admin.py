@@ -15,7 +15,6 @@ class SubBlogPostAdmin(admin.ModelAdmin):
 
 admin.site.register(TypeCategories)
 admin.site.register(BlogPostCategories)
-admin.site.register(Advertisement)
 admin.site.register(Paginating)
 @admin.register(BlogPostSubCategories)
 class BlogPostSubCategoriesAdmin(admin.ModelAdmin):

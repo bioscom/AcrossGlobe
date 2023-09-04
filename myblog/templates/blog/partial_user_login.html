@@ -1,5 +1,6 @@
 {% load i18n %}
-<div class="dropdown dropdown-menu-end" style="font-size:10px background-color:#2B7A78;">
+
+<div class="dropdown dropdown-menu-end" style="font-size:10px">
 
     {% if user.is_authenticated %}
         {% if user.profile.image %}
@@ -17,21 +18,33 @@
         </button>
     {% endif %}
 
-        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="Dropdown">
+        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="Dropdown" style="font-size:10px; width:250px">
             {% if user.is_authenticated %}
                 <li class="nav-item">
                     <a class="nav-link {% block profileactive %} {% endblock profileactive %}" href="#" hx-get="{% url "edit_profile" %}" hx-target="#dialog">{% trans "Edit Profile" %}</a>
                 </li>
-
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'campaign:myads' %}">{% trans "My Adverts" %}</a>
+                </li>
                 {% if user.is_superuser %}
+                    <hr>
                     <li class="nav-item">
                         <a class="nav-link" href="/admin/">{% trans "Site Admin" %}</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="/category_list/">{% trans "Categories" %}</a>
+                        <a class="nav-link" href="/category_list/">{% trans "Categories Ad Rate" %}</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'campaign:campaign' %}">{% trans "Ad Slots" %}</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'campaign:all_ads' %}">{% trans "Ad Management" %}</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'campaign:advertcredit' %}">{% trans "Ad Credit Management" %}</a>
                     </li>
                 {% endif %}
-
+                <hr>
                 <li class="nav-item">
                     <a class="nav-link" href="#" hx-get="{% url "password_change" %}" hx-target="#dialog">{% trans "Change Password" %}</a>
                 </li>

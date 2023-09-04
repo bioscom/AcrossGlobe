@@ -20,7 +20,8 @@
           <ul class="nav navbar-nav mb-2 mb-lg-0">
               {% if user.is_authenticated %}
                   <li class="nav-item">
-                    <a class="nav-link active s" href="#" hx-get="{% url "profile" request.user.id %}" hx-target="#dialog">{% trans "Welcome, " %} {{request.user}}</a>
+                    {% comment %} <a class="nav-link active s" href="#" hx-get="{% url "profile" request.user.id %}" hx-target="#dialog">{% trans "Welcome, " %} {{request.user}}</a> {% endcomment %}
+                    <a class="nav-link active s" href="{% url "profile" request.user.id %}">{% trans "Welcome, " %} {{request.user}}</a>
                   </li>
                 {% else %}
                   <a class="nav-link active s">{% trans "Welcome, Guest:" %} 
@@ -34,12 +35,13 @@
           </ul>
         </div>
 
-        <span class="text-light" style="width:500px; font-size:14px"><b>Stats: </b>{% total_users %} members, {% total_posts %} topics. <br>
+        <span class="text-light" style="width:500px; font-size:14px">
+          <b>Stats: </b>{% total_users %} members, {% total_posts %} topics. <br>
           <b>Date:</b> {% now "l, j F Y" %} at {% now "h:i A" %}
         </span>
 
         <div class="text-right">
-            <a href="{% url 'event:events_list' %}" title="Post Events">
+            <a id="event_Id" href="{% url 'event:events_list' %}" title="Post Events" onload="eventFunction()">
               <img class="shadow-lg" src="/media/logo/show-apps-button.png" loading="lazy"/>
             </a>
             {% comment %}<div class="gb_6e ng-non-bindable" style="visibility: hidden; left: 1210.5px; top: 446px; display: none;">Google apps</div>
@@ -52,6 +54,10 @@
         {% comment %} <span class="text-light" style="width:500px; font-size:14px"><b>Stats: </b>500,000,000 members, 90,000,000 topics. <br><b>Date:</b> {% now "l, j F Y" %} at {% now "h:i A" %}</span> {% endcomment %}
 
         {% comment %} {% include "blog/partial_language_selector.html" %} {% endcomment %}
+
+
+
+        {% include "blog/notifications.html" %}
         {% include "blog/partial_user_login.html" %}
         
       </div>
@@ -81,3 +87,11 @@
     </div>
   </div>
 {% endfor %}
+
+
+<script>
+  function eventFunction() {
+    const element = document.getElementById("event_Id"); 
+    element.title = "Post Event Here";
+  }
+</script>

@@ -1,0 +1,47 @@
+{% extends 'base.html' %}
+{% load i18n %}
+{% load humanize %}
+
+{% block title %}  {% endblock %}
+
+{% block css %}
+     
+{% endblock %}
+
+{% block body %}
+
+<div class="card">
+    <div class="card-header"> 
+       <h4> Admin - Registered Users Advertising Credits </h4>
+    </div>
+    <div class="card-body" style="height: 75vh; overflow-y: auto;">
+        <a class="btn btn-primary" href="#" hx-get="{% url 'campaign:addcredit' %}" hx-target="#dialog">Add New User Credit</a>
+        <hr>
+        <table class="table table-hover">
+            <tr>
+                <th>...</th>
+                <th>User Id</th>
+                <th>Full Name</th>
+                <th>Credit</th>
+                <th>Created Date</th>
+                <th>Date Modified</th>
+                <th></th>
+            </tr>
+            {% for obj in advertcredits %}
+                <tr>
+                    <td>{{forloop.counter}}</td>
+                    <td><a href="#" hx-get="/account/user_profile/{{obj.user.id}}/" hx-target="#dialog" class="user">{{obj.user.username}}</a></td>
+                    <td>{{obj.user.first_name}}, {{obj.user.last_name}}</td>
+                    <td>&#8358;{{obj.credit|intcomma}}</td>
+                    <td>{{obj.creation_date}}</td>
+                    <td>{{obj.modified_date}}</td>
+                    <td>
+                        <button type="button" class="btn btn-danger" href="#" hx-get="{% url 'campaign:updatecredit' obj.pk %}" hx-target="#dialog"><i class="fa fa-edit"></i></button>
+                    </td>
+                </tr>
+            {% endfor %}
+        </table>
+    </div>
+</div>
+
+{% endblock %}

@@ -45,7 +45,7 @@
                 </div> 
                 <div class="modal-footer">
                     {% comment %} {% if movie %} {% endcomment %}
-                    <button type="button" class="btn btn-danger" hx-post="{% url 'MyBlog:delete_post' post.slug %}" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Note: Post can no longer be deleted after 1 week.">Delete Post</button>
+                    <button type="button" class="btn btn-danger" hx-post="{% url 'MyBlog:delete_post' post.slug %}" data-bs-toggle="tooltip" data-bs-placement="bottom" eek.title="Note: Post can no longer be deleted after 1 w">Delete Post</button>
                     <span class="flex-grow-1"></span>
                     {% comment %} {% endif %} {% endcomment %}
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</a>

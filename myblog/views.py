@@ -6,6 +6,7 @@ from django.contrib.auth.models import User
 from django import forms
 from myblog.forms import *
 from .models import *
+from campaign.models import PlaceAdvert, Advertisement
 from django.contrib.auth.decorators import login_required
 from django.views.generic import UpdateView
 from django.contrib import messages
@@ -29,6 +30,8 @@ from hitcount.views import HitCountMixin
 from django.core.files.uploadedfile import SimpleUploadedFile
 from itertools import chain
 import datetime        #from datetime  Import datetime
+
+from channels.layers import get_channel_layer
 
 # from django.shortcuts import render
 # from rest_framework.views import APIView
@@ -54,7 +57,22 @@ import datetime        #from datetime  Import datetime
 #endregion ====================================================================
 
 
+def home(request):
+    return render(request, 'myblog/blog_list.html', {
+        'room_name': "broadcast"
+    })
 
+from asgiref.sync import async_to_sync
+def test(request):
+    channel_layer = get_channel_layer()
+    async_to_sync(channel_layer.group_send)(
+        "notification_broadcast",
+        {
+            'type': 'send_notification',
+            'message': json.dumps("Notification")
+        }
+    )
+    return HttpResponse("Done")
 
 class AllKeywordsView(ListView):
     model = BlogPost
@@ -87,7 +105,7 @@ def category_by_type(request, pk):
 #region =============== Category ========================================================================================
 def category_list(request):
     try:
-        categories = BlogPostCategories.objects.all().order_by('type')
+        categories = BlogPostCategories.objects.all().order_by('category_title')
         subcategories = BlogPostSubCategories.objects.all()
         form = CategoryForm(data=request.POST, files=request.FILES)
         #return render(request, "blog/add_categories.html", {'form': form, 'categories': categories})
@@ -143,6 +161,9 @@ def blogs_list(request):
     categories = BlogPostCategories.objects.filter() #.order_by('category_title')
     object_list = BlogPost.objects.filter(is_approved=True).filter(parent_id__isnull=True).order_by('-dateTime', 'category')
     
+    #ads = PlaceAdvert.objects.filter(category.category_title = "Home Page")
+    ads = PlaceAdvert.objects.filter(category_id = 56)
+    
     #most_recent = BlogPost.objects.order_by('-timestamp')[:3]
     active_users = User.objects.all().filter(last_login__gte=now()-timedelta(minutes=5)).count()
     hits = HitCount.objects.all().filter(modified__gte=now()-timedelta(minutes=5))
@@ -163,7 +184,7 @@ def blogs_list(request):
     except EmptyPage:
         # If page is out of range deliver last page of results
         posts = paginator.page(paginator.num_pages)
-    return render(request, "blog/blog_list.html", {'posts': posts, 'types': types, 'categories': categories, 'active_users':active_users, 'guest_users':guest_users})
+    return render(request, "blog/blog_list.html", {'posts': posts, 'types': types, 'categories': categories, 'active_users':active_users, 'guest_users':guest_users, 'ads':ads})
 
 
 def news_list(request):
@@ -196,6 +217,8 @@ def blogByCategory(request, slug, cat_id):
     object_list = BlogPost.objects.all()
     object_list = BlogPost.objects.filter(category=cat_id).filter(parent_id__isnull=True).order_by('-dateTime')
     
+    ads = PlaceAdvert.objects.filter(category_id=cat_id)
+    
     no_of_pages = Paginating.objects.get()
     paginator = Paginator(object_list, no_of_pages.number_of_pages)  # 3 posts in each page
     page = request.GET.get('page')
@@ -207,7 +230,7 @@ def blogByCategory(request, slug, cat_id):
     except EmptyPage:
         # If page is out of range deliver last page of results
         posts = paginator.page(paginator.num_pages)
-    return render(request, "blog/blog_category.html", {'posts': posts, 'category': category, 'subcategories': subcategories, 'active_users':active_users, 'cattype':cattype })
+    return render(request, "blog/blog_category.html", {'posts': posts, 'category': category, 'subcategories': subcategories, 'active_users':active_users, 'cattype':cattype, 'ads':ads })
 
 
 def blogBySubCategory(request, slug):
@@ -242,6 +265,7 @@ def blog_details(request, slug):
     if post is not None:
         category = BlogPostCategories.objects.filter(id=post.category_id).first()
         cattype = TypeCategories.objects.get(id=category.type_id)
+        ads = PlaceAdvert.objects.filter(category_id=category.id)
         
     queryset = BlogPost.objects.annotate(num_views=Count('viewers')).order_by('-num_views')
     datas = get_object_or_404(queryset, slug=slug)
@@ -266,7 +290,7 @@ def blog_details(request, slug):
         comments = paginator.page(paginator.num_pages)
     return render(request, "blog/blog_details.html", {'posts': post, 'comments':comments, 'datas': datas, 'category': category, 
                                                       'popular_posts': popular_posts, 'least_popular_posts': least_popular_posts, 
-                                                      'guest_user':guest_user, 'cattype':cattype})
+                                                      'guest_user':guest_user, 'cattype':cattype, 'ads':ads})
 
 
 def blog_sub_details(request, slug): 
@@ -888,65 +912,7 @@ def site_statistics(request):
 
 #endregion
 
-#region =============== Advertise on blog post category =================================================================
-@login_required(login_url='/account/login')
-def adverts(request, slug):
-    category = get_object_or_404(BlogPostCategories, slug=slug)
-    myadverts = get_object_or_404(Advertisement, user_id=request.user.id)
-    if request.method == "POST":
-        form = AdvertisementForm(request.POST)
-        if form.is_valid():
-            form.save()
-            return redirect('/en/' + slug + '/' + category.id + '/')
-    else:
-       form = AdvertisementForm()
-    return render(request, 'blog/partial_advertisement.html', {'form': form, 'category': category, 'myadverts': myadverts})
 
-
-@login_required(login_url='/account/login')
-def adverts(request):
-    if request.method == "POST":
-        form = AdvertisementForm(request.POST)
-        if form.is_valid():
-            form = form.save(commit=False)
-            #form.category = post
-            form.user = request.user
-            form.save()
-            
-            #return redirect('en/' + slug + '/' + category.id + '/')
-            
-            # object_list = BlogPost.objects.filter(category=category.id).order_by('-dateTime')
-            # paginator = Paginator(object_list, 36)  # 3 posts in each page
-            # page = request.GET.get('page')
-            # try:
-            #     posts = paginator.page(page)
-            # except PageNotAnInteger:
-            #     # If page is not an integer deliver the first page
-            #     posts = paginator.page(1)
-            # except EmptyPage:
-            #     # If page is out of range deliver last page of results
-            #     posts = paginator.page(paginator.num_pages)
-            #return render(request, "blog/blog_category.html", {'posts': posts, 'category': category})
-            
-            #return redirect('/en/partial_advertisement/{{ category_id }}'), 'myadverts': myadverts
-    else:
-       form = AdvertisementForm()
-    return render(request, 'blog/partial_advertisement.html', {'form': form})
-
-
-def edit_advertisement(request, pk):
-    category = get_object_or_404(BlogPostCategories, id=request.category.id)
-    advert = get_object_or_404(Advertisement, pk=pk)
-    if request.method == "POST":
-        form = AdvertisementForm(request.POST, instance=advert)
-        if form.is_valid():
-            form.save()
-            return redirect('/en/partial_advertisement/{{ category_id }}')
-    else:
-       form = AdvertisementForm(instance=advert)
-    return render(request, 'blog/partial_advertisement.html', {'form': form, 'category': category})
-
-#endregion
 
 #region =============== Generate Unique code for adverts =================================================================
 
